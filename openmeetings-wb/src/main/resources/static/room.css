@@ -1,0 +1,471 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License") +  you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+.room.sidebar #busy-indicator {
+	margin: 8px;
+}
+.room.holder {
+	width: 100%;
+}
+.room.box {
+	height: 100%;
+}
+.ui-icon.room.menu.exit {
+	background-image: url(images/exit_button.png);
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	margin-left: 5px;
+}
+.ui-icon.status-user {
+	background-image: url(images/status-user.png);
+}
+.ui-icon.status-wb {
+	background-image: url(images/status-wb.png);
+}
+.ui-icon.status-mod {
+	background-image: url(images/status-mod.png);
+}
+.room.menu .ui-menu .ui-menu-item {
+	padding-left: 5px;
+	padding-right: 0;
+}
+.room.menu .top.room.menu.exit {
+	padding-left: 0;
+}
+.room.menu.right {
+	position: absolute;
+	top: 0px;
+	margin-right: 5px;
+	right: 0px;
+	display: inline-block;
+}
+.room.menu.right .room {
+	float: right;
+	padding-top: 5px;
+	padding-right: 5px;
+}
+.room.menu.right .room.name {
+	font-weight: bold;
+}
+.room.menu.right .room.name.screen {
+	color: red;
+}
+.room.menu.right .room.demo {
+}
+.room.menu.right .icon {
+	width: 30px;
+	height: 30px;
+	background-repeat: no-repeat;
+	background-position: 5px 5px;
+	background-size: 22px;
+	float: right;
+	padding: 0;
+}
+.room.menu.right .icon.share {
+	background-image: url(images/monitor_go.png);
+}
+.room.menu.right .icon.shared {
+	background-image: url(images/shared.png);
+}
+.room.menu.right .icon .profile {
+	margin-top: 3px;
+}
+.room.menu.right .icon .profile img {
+	width: 28px;
+}
+.room.sidebar.left {
+	min-width: 150px;
+	width: 315px;
+	position: absolute;
+}
+.room.sidebar.left .ui-resizable-handle {
+	width: 4px;
+	background-color: #f3f3f4;
+	border: 1px solid #dedee0;
+}
+.room.sidebar.left .ui-resizable-handle:hover {
+	background-color: #b6bdca;
+	border-color: #bebec3;
+}
+.room.sidebar.left .ui-tabs .ui-tabs-panel {
+	padding: 0;
+}
+.room.sidebar.left .user.header {
+	height: 45px;
+	padding-left: 5px;
+}
+.room.sidebar.left .user.header .ui-icon {
+	margin-top: 5px;
+	margin-left: 5px;
+	width: 32px;
+	height: 32px;
+}
+.room.sidebar.left .user.list {
+	overflow-y: auto;
+}
+.room.sidebar.left .user.list .user {
+	min-height: 40px;
+	padding-left: 5px;
+	padding-top: 5px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+	background-position: 2px 2px;
+	position: relative;
+}
+.room.sidebar.left .user.list .user.name {
+	line-height: 18px;
+	height: 18px;
+	padding: 0;
+	padding-left: 44px;
+	margin-right: 20px;
+	overflow: hidden;
+}
+.room.holder.small .room.sidebar.left .user.list .user.name {
+	display: none;
+}
+.room.sidebar.left .user.list .user .user.actions {
+	position: relative;
+	min-height: 18px;
+	padding: 0;
+	padding-left: 44px;
+	visibility: hidden;
+	margin-right: 35px;
+}
+.room.sidebar.left .user.list .user:hover .user.actions {
+	visibility: visible;
+}
+.room.sidebar.left .user.list .user .user.actions .ui-icon {
+	margin-right: 2px;
+	margin-top: 0;
+}
+.room.sidebar.left .user.list .user .ui-icon {
+	background-size: 16px;
+}
+.room.sidebar.left .user.list .user .ui-icon.audio-activity {
+	position: absolute;
+	bottom: 0px;
+	right: 3px;
+}
+.room.sidebar.left .user.list .user .ui-icon.big {
+	background-size: 32px;
+}
+.audio-activity.ui-icon {
+	opacity: 0.2;
+	background-image: url(images/speaking.png);
+}
+.typing-activity.ui-icon {
+	display: none;
+	width: 30px;
+	background-image: url(images/typing.gif);
+}
+.typing-activity.ui-icon.typing {
+	display: inline-block;
+}
+.private-chat.ui-icon {
+	background-image: url(images/page_edit.png);
+}
+.audio-activity.ui-icon.speaking, .ui-icon.granted {
+	opacity: 1;
+}
+.right.moderator.ui-icon {
+	background-image: url(images/user_add.png);
+}
+.room.menu.right .icon.ask {
+	background-image: url(images/hand.png);
+}
+.right.moderator.ui-icon.granted {
+	background-image: url(images/user_delete.png);
+}
+.right.presenter.ui-icon {
+	background-image: url(images/wand_add.png);
+}
+.right.presenter.ui-icon.granted {
+	background-image: url(images/wand_delete.png);
+}
+.right.wb.ui-icon {
+	background-image: url(images/pencil_add.png);
+}
+.right.wb.ui-icon.granted {
+	background-image: url(images/pencil_delete.png);
+}
+.right.screen-share.ui-icon {
+	background-image: url(images/monitor_add.png);
+}
+.right.screen-share.ui-icon.granted {
+	background-image: url(images/monitor_delete.png);
+}
+.right.remote-control.ui-icon {
+	background-image: url(images/mouse_add.png);
+}
+.right.remote-control.ui-icon.granted {
+	background-image: url(images/mouse_delete.png);
+}
+.right.audio.ui-icon {
+	background-image: url(images/microphone_add.png);
+}
+.right.audio.ui-icon.granted {
+	background-image: url(images/microphone_delete.png);
+}
+.right.camera.ui-icon {
+	background-image: url(images/webcam_add.png);
+}
+.right.camera.ui-icon.granted {
+	background-image: url(images/webcam_delete.png);
+}
+.exclsv-audio.ui-icon {
+	background-image: url(images/microphone_exclusive.png);
+}
+.kick.ui-icon {
+	background-image: url(images/cancel_icon.png);
+	background-size: 16px;
+}
+.restart.ui-icon {
+	background-image: url(images/arrow_refresh_small.png);
+}
+.settings.ui-icon, .settings.om-icon {
+	background-image: url(images/settings.png);
+}
+.activity.cam.ui-icon {
+	background-image: url(images/webcam_enable.png);
+}
+.activity.cam.enabled.ui-icon {
+	background-image: url(images/webcam_disable.png);
+}
+.activity.mic.ui-icon {
+	background-image: url(images/microphone_enable.png);
+}
+.ui-icon.disabled, .om-icon.disabled {
+	-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(100%);
+	pointer-events: none;
+}
+.activity.mic.enabled.ui-icon {
+	background-image: url(images/microphone_disable.png);
+}
+.room.sidebar.left .user.list .user .user.actions .ui-icon.bumper
+	, .room.sidebar.left .user.header .ui-icon.bumper {
+	padding-right: 5px;
+}
+.room.sidebar.left .tabs, .room.sidebar.left .tabs #utab, .room.sidebar.left .tabs #ftab {
+	padding: 0;
+}
+.room.sidebar.left .user.list .user.current {
+	font-weight: bold;
+	background-color: #00FF00;
+}
+.ui-dialog.video, .ui-dialog.video .ui-dialog-titlebar, .ui-dialog.video .ui-dialog-content {
+	padding: 0;
+}
+.ui-dialog.video .ui-dialog-content {
+	overflow: hidden;
+}
+.ui-dialog.video .ui-dialog-titlebar {
+	padding-left: 10px
+}
+.ui-dialog.video.user-video.user-speaks{
+	box-shadow: 3px 3px 4px green;
+}
+.dropdown-menu.video.volume, .dropdown-menu.video.volume li {
+	width: 20px;
+	min-width: 20px;
+	border-radius: 0;
+	border: 0;
+	box-shadow: initial;
+	left: 70px;
+	top: -50px;
+	background-color: transparent;
+}
+#video-settings {
+	padding: 5px 10px;
+}
+.ui-dialog.video .title {
+	font-weight: bold;
+}
+.ui-dialog.video .opt-block {
+	width: 300px;
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.ui-dialog.video .vid-block {
+	min-width: 300px;
+	padding-left: 305px;
+}
+.ui-dialog.video .level-meter {
+	height: 16px;
+}
+.ui-dialog.video .warn {
+	float: right;
+	margin-right: .3em;
+}
+.ui-dialog.video .level-meter .ui-progressbar-value {
+	background: greenyellow;
+}
+.ui-dialog.video .sett-container {
+	position: relative;
+	min-height: 200px;
+}
+.ui-dialog.video .sett-row {
+	padding-top: 10px;
+}
+.ui-dialog.video .sett-row.right {
+	text-align: right;
+}
+.ui-dialog.video .vid-block .video-conainer {
+	overflow: auto;
+	max-height: 300px;
+}
+.ui-dialog.video .sett-row select, .ui-dialog.video .level-meter {
+	width: 250px;
+}
+.ui-dialog.video .ui-dialog-titlebar-collapse span
+, .ui-dialog.video .ui-dialog-titlebar-volume span
+, .ui-dialog.video .ui-dialog-titlebar-refresh span
+{
+	display: block;
+	margin: 1px;
+}
+.ui-dialog.video .footer {
+	display: none;
+}
+.ui-dialog.video.mic-status .footer {
+	display: block;
+}
+.input .select2-container {
+	max-height: 100px;
+	overflow-y: auto;
+}
+.sip .button-row {
+	text-align: center;
+	margin: 5px;
+}
+.sip .button-row input.sip-number {
+	width: 130px;
+}
+.sip .button-row #sip-dialer-btn-erase {
+	margin-left: 5px;
+}
+.sip .button-row #sip-dialer-btn-erase .ui-button-text {
+	padding: .1em .7em;
+	font-weight: bolder;
+}
+.room.sidebar.left .tab.om-icon.big {
+	padding: 0em 1em 0 2.5em;
+	line-height: 30px;
+	width: auto;
+	max-width: 80px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.room.holder.small .room.sidebar.left .tab.om-icon.big {
+	max-width: 0px;
+	padding-right: 0;
+}
+.room.holder.small .room.sidebar.left .file.tree .file.item .name
+	, .room.holder.small .room.sidebar.left .file.tree .file.item .name span
+{
+	width: 40px;
+}
+.room.sidebar.left .tab.om-icon.big.user {
+	background-image: url(images/group.png);
+}
+.room.sidebar.left .tab.om-icon.big.file {
+	background-image: url(images/folder_explore.png);
+}
+/************ VIDEO **************/
+.room.box .user-video {
+	display: inline-block !important;
+}
+.room.box .user-video .header {
+	height: 20px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.room.box .user-video .header .ui-dialog-title {
+	padding-left: 5px;
+}
+.room.box .user-video .video {
+	min-width: 40px;
+	min-height: 30px;
+	overflow: hidden;
+}
+.pod-row {
+	text-align: center;
+	padding-top: 40px;
+}
+.pod-row .pod-container, .pod-row .pod-container .pod {
+	display: inline-block;
+	width: 320px;
+}
+.pod-row .pod-container {
+	padding-right:10px;
+}
+.pod-row .pod-container .pod {
+	height: 290px;
+	border: 1px solid #CCCCCC;
+	position: relative;
+}
+.pod-row .pod-container .pod a.middle {
+	margin-top: 30%;
+	margin-bottom: 30%;
+}
+.width250 {
+	min-width: 250px;
+	max-width: 250px;
+}
+@media screen and (max-width: 1280px) {
+	.room.sidebar.left {
+		width: 150px;
+	}
+	.room.holder .room.sidebar.left .tab.om-icon.big {
+		max-width: 0px;
+		padding-right: 0;
+	}
+	.room.holder.big .room.sidebar.left .tab.om-icon.big {
+		max-width: 80px;
+		padding: 0em 1em 0 2.5em;
+	}
+	.room.holder .room.sidebar.left .user.list .user.name {
+		display: none;
+	}
+	.room.holder.big .room.sidebar.left .user.list .user.name {
+		display: block;
+	}
+	.room.holder .room.sidebar.left .file.tree .file.item .name
+		, .room.holder .room.sidebar.left .file.tree .file.item .name span
+	{
+		width: 40px;
+	}
+	.room.holder.big .room.sidebar.left .file.tree .file.item .name
+		, .room.holder.big .room.sidebar.left .file.tree .file.item .name span
+	{
+		width: 230px;
+	}
+	.room.sidebar.left .file.tree .file.item .name span {
+		padding: 0;
+	}
+	.room.holder .room.sidebar.left .file.tree .file.item {
+		width: 80px;
+	}
+	.room.holder.big .room.sidebar.left .file.tree .file.item {
+		width: auto;
+	}
+}

@@ -1,0 +1,617 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License") +  you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+html, body {
+	height: 100%;
+	margin: 0;
+	font-family: Arial, Helvetica, sans-serif;
+}
+* {
+	box-sizing: initial; /*reset bootstrap box sizing*/
+}
+#header {
+	font-size: 28px;
+	line-height: 40px;
+	font-weight: bold;
+	background-image: url(images/logo.png);
+	background-repeat: no-repeat;
+	padding-left: 80px;
+	margin-bottom: 10px;
+	margin-left: 20px;
+}
+#topLinks {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+#topLinks span {
+	padding-right: 5px;
+	padding-left: 5px;
+	border-right: 1px solid black;
+	white-space: nowrap;
+}
+
+#topLinks span:last-child {
+	border-right: none;
+}
+#busy-indicator {
+	display: none;
+	z-index: 1000;
+	width: 30px;
+	height: 30px;
+	border: 0;
+	position: absolute;
+	right: 0;
+	margin: 2px;
+	background-image: url(../images/ajax-loader.gif);
+	background-repeat: no-repeat;
+	background-size: 28px 28px;
+}
+.clickable {
+	cursor: pointer;
+}
+.dragbox-content .tableWrapper {
+	width: auto;
+	height: 100px;
+}
+.dragbox-content .tableWrapper .adminListTable {
+	max-width: none;
+	min-width: 0;
+}
+.help.support h3 {
+	margin-bottom: 5px;
+}
+.tableWrapper, .tableWrapperSmall {
+	background-color: #FFFFFF;
+	border: solid 1px #aacfe4;
+	width: 536px;
+	height: 100px;
+	overflow-y: scroll;
+}
+.tableWrapper {
+	height: 500px;
+}
+
+.formelementradiobox {
+	margin-left: 100px;
+}
+
+.formelementradiobox input {
+	margin: 0px 0px;
+	border: none;
+	width: 20px;
+}
+
+.formelementradiobox label {
+	width: 260px;
+	margin: 0px
+}
+
+.addLanguagePanel {
+	display: inline-block;
+}
+
+.addLanguagePanel select {
+	padding: 0px 0px;
+	border: solid 1px #aacfe4;
+	width: 140px;
+	font-size: 12px;
+	margin-left: 2px;
+}
+
+.pagedEntityListPanel {
+	margin-left: 2px;
+	display: inline-block;
+}
+
+.searchForm {
+	display: inline-block;
+	vertical-align: top;
+}
+.searchForm input[type="button"] {
+	padding: .2em .5em;
+	font-size: smaller;
+}
+.pagedEntityListPanel select, .adminForm .pagedEntityListPanel select {
+	padding: 0px 0px;
+	border: solid 1px #aacfe4;
+	width: 60px;
+	font-size: 12px;
+	display: inline;
+	float: none;
+}
+.searchForm input[type="text"], .adminForm .searchForm input[type="text"] {
+	width: 140px;
+	float: none;
+	display: inline-block;
+}
+.searchForm input[type="submit"], .adminForm .searchForm input[type="submit"] {
+	width: auto;
+	float: none;
+	display: inline-block;
+	border: 2px outset buttonface;
+	padding: 1px 6px;
+	font-size: 12px;
+}
+.pagedEntityListPanel input, .adminForm .pagedEntityListPanel input {
+	font-size: 14px;
+	padding: 0px 0px;
+	border: solid 1px #aacfe4;
+	width: 100px;
+	height: 20px;
+	margin: 2px 2px;
+	display: inline;
+	float: none;
+}
+
+.goto, .goto :link, .goto :hover {
+	font-size: 14px;
+	line-height: 14px;
+	text-decoration: none;
+	text-align: center;
+	vertical-align: middle;
+	min-width: 16px;
+}
+
+.goto.icon {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	zoom: 1.2;
+}
+
+.ui-dialog {
+	-moz-box-shadow: 3px 3px 4px #000;
+	-webkit-box-shadow: 3px 3px 4px #000;
+	/* For IE 8 */
+	-ms-filter:
+		"progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
+	/* For IE 5.5 - 7 */
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135,
+		Color='#000000' );
+	box-shadow: 3px 3px 4px #000;
+}
+.sort-icon, .sort-icon a {
+	display: inline-block !important;
+	text-indent: 0px !important;
+}
+.sort-icon a {
+	width: inherit;
+	height: inherit;
+}	
+.start_step1, .start_step2, .start_step3, .start_step4 {
+	padding-left: 30px;
+	background-position: left top;
+	margin: 5px 0px 5px 0px; 
+	background-size: contain;
+	background-repeat: no-repeat;
+	display: inline-block;
+}
+.start_step1 {
+	background-image: url(images/wizzard_button_1.png);
+}
+.start_step2 {
+	background-image: url(images/wizzard_button_2.png);
+	margin-left: 20px;
+}
+.start_step3 {
+	background-image: url(images/wizzard_button_3.png);
+	margin-left: 40px;
+}
+.start_step4 {
+	background-image: url(images/wizzard_button_4.png);
+	margin-left: 60px;
+}
+.widget {
+	width: 100%;
+}
+.widget td {
+	min-width: 150px;
+}
+#contents {
+}
+#contents .dragbox-content {
+}
+#feedcontainer {
+	overflow: auto;
+}
+#feeds.ui-accordion .ui-accordion-header {
+	margin-bottom: 2px;
+}
+.align-left {
+	float: left;
+}
+.align-right {
+	float: right;
+}
+.clear {
+	clear: both;
+}
+.om-icon {
+	background-repeat: no-repeat !important;
+	background-position: 0 0 !important;
+	background-size: 16px;
+	width: 18px;
+	height: 18px;
+	border: none;
+	margin-left: 2px;
+	margin-top: 2px;
+	display: inline-block !important;
+}
+.om-icon.big {
+	background-size: 32px;
+	background-position: 1px 1px !important;
+	width: 34px;
+	height: 34px;
+}
+.cross.om-icon {
+	background-image: url(images/cross.png);
+}
+.tick.om-icon {
+	background-image: url(images/tick.png);
+}
+.add.om-icon {
+	background-image: url(images/add.png);
+}
+.new-email.om-icon {
+	background-image: url(images/email_add.png);
+}
+.user.om-icon {
+	background-image: url(images/user.png);
+}
+.invite.om-icon {
+	background-image: url(images/connect.png);
+}
+.online.om-icon {
+	background-image: url(images/bullet_green.png);
+}
+.offline.om-icon {
+	background-image: url(images/bullet_red.png);
+}
+.error .k-notification-wrap {
+	white-space: normal;
+}
+.error {
+	color: red;
+}
+.message {
+	margin: 50px;
+	border: 1px solid black;
+	padding: 15px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+}
+.ui-progressbar div { 
+	text-align: center;
+	padding-top: 7px;
+	font-weight: bold;
+}
+table.messages {
+	width: 100%;
+	min-height: 500px;
+}
+table.messages td.side, table.messages td.main {
+	vertical-align: top;
+}
+table.messages td.side.left {
+	min-width: 150px;
+	overflow-x: hidden;
+}
+table.messages td.side.right {
+	min-width: 200px;
+	overflow-x: hidden;
+}
+table.messages td.main {
+	width: 100%;
+}
+.email {
+	padding-left: 25px;
+	background-repeat: no-repeat !important;
+	background-position: 5px 3px !important;
+	background-size: 16px 16px !important;
+	padding-top: 2px;
+	display: block;
+	text-align:left;
+}
+.email.new {
+	background-image: url(images/email_add.png);
+	font-weight: normal;
+}
+.email.new .ui-button-text, .email.newdir .ui-button-text {
+	padding: 0;
+}
+.email.inbox {
+	background-image: url(images/basket_put.png);
+}
+.email.sent {
+	background-image: url(images/email_go.png);
+}
+.email.trash {
+	background-image: url(images/email_delete.png);
+}
+.email.newdir {
+	background-image: url(images/folder_add.png);
+	font-weight: normal;
+}
+.email.folder {
+	background-image: url(images/folder.png);
+	font-weight: normal;
+	position: relative;
+}
+.email.folder .delete {
+	position:absolute;
+	right: 2px;
+	top: 2px;
+	background-image: url(images/cross.png);
+	font-weight: normal;
+	padding: 0;
+	display: inline-block;
+	background-position: 0;
+	width: 18px;
+	height: 18px;
+}
+.messages.column.label {
+	width: 20px;
+	min-height: inherit;
+}
+input[type="text"].messages.text {
+	width: 100%;
+}
+textarea.messages.body {
+	width: 100%;
+	height: 300px;
+}
+select.messages.selector {
+	width: 220px;
+}
+.info-text {
+	background-image: url(images/information.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	cursor: default;
+	border: none;
+	padding-left: 20px;
+	font-style: italic;
+	white-space: normal;
+}
+.info-title {
+	background-image: url(images/information.png);
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	margin-left: 10px;
+}
+.invisible-form-component {
+	position: absolute;
+	top: -9999px;
+	width: 1px;
+	height: 1px;
+}
+#messagesTable tr.selected {
+	background-color: #d7ebf9;
+}
+#messagesTable tr.unread {
+	font-weight: bold;
+}
+.fht-tbody {
+	background-color: white;
+}
+#searchUsersTable th, .fht-table th {
+	font-weight: bold !important;
+	text-align: left;
+}
+#ui-datepicker-div {
+	z-index: 100 !important;
+}
+.room-list {
+	border-collapse: collapse;
+	min-width: 400px;
+}
+.room-list .room-row {
+	background-color: rgb(248, 248, 248);
+	border-bottom: 5px solid white;
+	padding: 5px;
+	position: relative;
+}
+.room-list .room-row .container {
+	margin-right: 120px;
+}
+.room-list .room-row button {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+.select2-results .user.external, .select2-selection .user.external
+, .select2-results .user.internal, .select2-selection .user.internal {
+	padding-left: 18px;
+	background-repeat: no-repeat;
+	background-position: 0px 2px;
+}
+.select2-results .user.external, .select2-selection .user.external {
+	background-image: url(images/user_go.png);
+}
+.select2-results .user.internal, .select2-selection .user.internal {
+	background-image: url(images/user.png);
+}
+.om-select2 .select2.select2-container {
+	max-height: 80px;
+	overflow-y: auto;
+}
+.om-select2.full-width .select2.select2-container {
+	width: 100% !important;
+}
+.recording .video {
+	width: 100%;
+	display: inline-block;
+	box-shadow: 0 0 10px 1px rgba(74, 137, 151, 0.5);
+}
+.recording .video video {
+	width: 100%;
+}
+.page.recording {
+	padding-top: 40px;
+}
+.page.recording .video, .page.recording .info {
+	display: inline-block;
+	float: left;
+	padding-left: 20px;
+}
+.page.recording .video {
+	min-width: 400px;
+}
+.rooms.title {
+	font-weight: bold;
+	padding: 10px;
+	padding-bottom: 0;
+}
+.rooms.desc {
+	margin: 10px;
+	max-width: 900px;
+}
+.user.info.panel legend {
+	font-style: italic;
+	text-align: right;
+}
+.user.info.panel fieldset table, .user.info.panel fieldset table textarea {
+	width: 100%;
+}
+#topControls #wicketDebugBar {
+	right: initial;
+	top: initial;
+	z-index: 2;
+	bottom: 0;
+	position: fixed;
+}
+form .input {
+	display: block;
+	float: left;
+	font-size: 14px;
+	padding: 0px 0px;
+	width: 280px;
+	margin: 2px 2px;
+}
+.profile img {
+	width: 125px;
+}
+.date.time.picker {
+	font-size: 12px;
+	white-space: nowrap;
+}
+.profile .ui-button-text-only .ui-button-text {
+	font-size: 12px;
+	padding-right: 0.2em;
+	padding-left: 0.2em;
+}
+#contents .btn-file>input {
+	transform: translate(-30px, 0) scale(1);
+}
+.room.list.container {
+	height: 150px;
+	max-height: 150px;
+	overflow-y: auto;
+	border: 1px solid #cccccc;
+}
+.no-close .ui-dialog-titlebar-close {
+	display: none;
+}
+.table {
+	position: relative;
+}
+.table .column {
+	display: inline-block;
+	margin-bottom: 5px;
+	min-height: initial;
+	float: none;
+	margin-right: 0;
+}
+.table .column.label {
+	width: 20%;
+}
+.table .column.data {
+	width: 75%;
+	vertical-align: middle;
+}
+ /**** FIXME TODO need to be unified with other icons used ****/
+div.formSaveBar {
+	height: 22px;
+}
+.addButton, .delButton {
+	display: inline-block;
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	border: none;
+	margin-left: 2px;
+	margin-top: 2px;
+	vertical-align: super;
+}
+div.formSaveButton input {
+	background: url(images/disk.png) no-repeat;
+	float: left;
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	border: none;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+.addButton {
+	background: url(images/plus_icon.png) no-repeat;
+}
+.delButton {
+	background: url(images/cancel_icon.png) no-repeat;
+}
+.formNewButton {
+	background: url(images/plus_icon.png) no-repeat;
+	float: left;
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	border: none;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+.formNewButton.disabled {
+	background: url(images/plus_icon_disabled.png) no-repeat;
+}
+div.formRefreshButton input {
+	background: url(images/arrow_refresh_small.png) no-repeat;
+	float: left;
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	border: none;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+.formCancelButton {
+	background: url(images/cancel_icon.png) no-repeat;
+	display: inline-block;
+	float: left;
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	border: none;
+	margin-left: 2px;
+	margin-top: 2px;
+}
