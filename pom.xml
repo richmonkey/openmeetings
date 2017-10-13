@@ -71,9 +71,6 @@
 				<maven.test.skip>true</maven.test.skip>
 			</properties>
 			<modules>
-				<module>openmeetings-util</module>
-				<module>openmeetings-db</module>
-				<module>openmeetings-core</module>
 				<module>openmeetings-wb</module>
 			</modules>
 		</profile>
