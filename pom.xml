@@ -25,20 +25,18 @@
 	<artifactId>openmeetings-wb</artifactId>
 	<packaging>jar</packaging>
 	<name>Openmeetings Whiteboard</name>
-	<description>Module for all Wicket based UI OpenMeetings components</description>
+	<description>Openmeetings Whiteboard</description>
 	<properties>
 		<mail.version>1.6.0</mail.version>
 
 		<dom4j.version>2.0.1</dom4j.version>
 		<commons-codec.version>1.10</commons-codec.version>
 		<commons-io.version>2.5</commons-io.version>
-
 		<openjpa.version>2.4.2</openjpa.version>
 		<asterisk-java.version>1.0.0-final</asterisk-java.version>
 		<commons-dbcp.version>2.1.1</commons-dbcp.version>
 		<commons-pool.version>1.6</commons-pool.version> <!-- required by OpenJPA for clustering -->
 		<commons-pool2.version>2.4.2</commons-pool2.version>
-		<postgresql.version>42.1.4</postgresql.version>
 		<site.basedir>${project.basedir}</site.basedir>
 		<mysql.version>5.1.43</mysql.version>
 		<mssql.version>6.2.1.jre8</mssql.version>
@@ -48,19 +46,11 @@
         <spring.version>4.3.10.RELEASE</spring.version>
 		<derby.version>10.13.1.1</derby.version>
 
-		<demo.port>8086</demo.port>
-
-		<!-- Main class -->
 		<start-class>org.kurento.tutorial.groupcall.GroupCallApp</start-class>
-
 	</properties>
-
-
 
 	<dependencyManagement>
 		<dependencies>
-
-
 			<dependency>
 				<groupId>org.apache.openmeetings</groupId>
 				<artifactId>openmeetings-core</artifactId>
@@ -368,8 +358,6 @@
 			<artifactId>derbyclient</artifactId>
 			<version>${derby.version}</version>
 		</dependency>
-
-
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
