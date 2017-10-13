@@ -43,32 +43,29 @@ import com.google.gson.JsonPrimitive;
  * @since 4.3.1
  */
 public class Room implements Closeable {
+      private final Logger log = LoggerFactory.getLogger(Room.class);
+
+      private final ConcurrentMap<String, UserSession> participants = new ConcurrentHashMap<>();
+
+      public final ConcurrentHashMap<Long, Deque<UndoObject>> undoList = new ConcurrentHashMap<>();
+
+      private final String name;
+
+      public String getName() {
+        return name;
+      }
+
+      public Room(String roomName) {
+        this.name = roomName;
+        log.info("ROOM {} has been created", roomName);
+      }
 
 
-
-
-  private final Logger log = LoggerFactory.getLogger(Room.class);
-
-  private final ConcurrentMap<String, UserSession> participants = new ConcurrentHashMap<>();
-
-  public final Map<Long, Deque<UndoObject>> undoList = new HashMap<>();
-
-  private final String name;
-
-  public String getName() {
-    return name;
-  }
-
-  public Room(String roomName) {
-    this.name = roomName;
-    log.info("ROOM {} has been created", roomName);
-  }
-
-  public long getRoomID() {
+    public long getRoomID() {
       return Long.parseLong(name);
-  }
+    }
 
-    public void addUndo(Long wbId, UndoObject u) {
+    public synchronized void addUndo(Long wbId, UndoObject u) {
         if (wbId == null) {
             return;
         }
@@ -79,7 +76,7 @@ public class Room implements Closeable {
         undoList.get(wbId).push(u);
     }
 
-    public UndoObject getUndo(Long wbId) {
+    public synchronized UndoObject getUndo(Long wbId) {
         if (!undoList.containsKey(wbId)) {
             return null;
         }
@@ -153,7 +150,6 @@ public class Room implements Closeable {
       log.debug("ROOM {}: The users {} could not be notified that {} left the room", this.name,
           unnotifiedParticipants, name);
     }
-
   }
 
 

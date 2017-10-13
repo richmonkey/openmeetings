@@ -18,11 +18,10 @@
  */
 package org.apache.openmeetings.core.data.whiteboard;
 
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openmeetings.db.dto.room.Whiteboard;
 import org.apache.openmeetings.db.dto.room.Whiteboards;
@@ -36,15 +35,12 @@ import org.apache.openmeetings.db.dto.room.Whiteboards;
  */
 public class WhiteboardCache {
 
-	private static Map<Long, Whiteboards> whiteboards = new HashMap<Long, Whiteboards>();
+	private static ConcurrentHashMap<Long, Whiteboards> whiteboards = new ConcurrentHashMap<>();
 	private static Map<Long, Whiteboards> getCache() {
-		//IApplication iapp = (IApplication)Application.get(wicketApplicationName);
-		//return iapp.getWhiteboards();
 		return whiteboards;
 	}
 
 	private static String getDefaultName(Long langId, int num) {
-		//StringBuilder sb = new StringBuilder(LabelDao.getString("615", langId));
         StringBuilder sb = new StringBuilder("Whiteboard");
 		if (num > 0) {
 			sb.append(" ").append(num);
