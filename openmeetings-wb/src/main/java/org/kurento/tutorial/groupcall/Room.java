@@ -19,27 +19,14 @@
 
 package org.kurento.tutorial.groupcall;
 
-import java.io.BufferedReader;
+
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import javax.annotation.PreDestroy;
-
-
 import com.github.openjson.JSONObject;
-import org.apache.openmeetings.core.data.whiteboard.WhiteboardCache;
-import org.apache.openmeetings.core.util.WebSocketHelper;
-import org.apache.openmeetings.db.dto.room.Whiteboard;
-import org.apache.openmeetings.db.dto.room.Whiteboards;
-import org.apache.openmeetings.db.entity.file.BaseFileItem;
-import org.apache.openmeetings.db.entity.file.FileItem;
 import org.apache.openmeetings.util.NullStringer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +37,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import com.github.openjson.JSONArray;
-import com.github.openjson.JSONObject;
-import com.github.openjson.JSONTokener;
 
 /**
  * @author Ivan Gracia (izanmail@gmail.com)
