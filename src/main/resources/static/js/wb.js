@@ -284,7 +284,7 @@ var APointer = function(wb) {
 	var pointer = Base();
 	pointer.user = '';
 	pointer.create = function(canvas, o) {
-		fabric.Image.fromURL('./css/images/pointer.png', function(img) {
+		fabric.Image.fromURL('./images/pointer.png', function(img) {
 			img.set({
 				left:15
 				, originX: 'right'
@@ -762,7 +762,7 @@ var Wb = function() {
 			initToolBtn(cur.data('mode'), false, Clipart(wb, cur));
 		});
 	}
-	function confirmDlg(_id, okHandler) {
+        function confirmDlg(_id, okHandler) {
 		var confirm = $('#' + _id);
 		confirm.dialog({
 			modal: true
@@ -828,9 +828,9 @@ var Wb = function() {
 		var clearAll = t.find('.om-icon.clear-all');
 		switch (role) {
 			case PRESENTER:
-				clearAll.click(function() {
-					confirmDlg('clear-all-confirm', function() { wbAction('clearAll', JSON.stringify({wbId: wb.id})); });
-				}).removeClass('disabled');
+			        clearAll.click(function() {
+                                    wbAction('clearAll', JSON.stringify({wbId: wb.id}));
+                                });
 				z.find('.curr-slide').change(function() {
 					_setSlide($(this).val() - 1);
 					showCurrentSlide();
@@ -860,8 +860,8 @@ var Wb = function() {
 				t.find(".om-icon.settings").click(function() {
 					s.show();
 				});
-				t.find('.om-icon.clear-slide').click(function() {
-					confirmDlg('clear-slide-confirm', function() { wbAction('clearSlide', JSON.stringify({wbId: wb.id, slide: slide})); });
+		         	t.find('.om-icon.clear-slide').click(function() {
+                                   wbAction('clearSlide', JSON.stringify({wbId: wb.id, slide: slide}));
 				});
 				t.find('.om-icon.save').click(function() {
 					wbAction('save', JSON.stringify({wbId: wb.id}));
@@ -1158,7 +1158,8 @@ var Wb = function() {
 	}
 	function pathCreatedHandler(o) {
 		o.path.uid = UUID.generate();
-		o.path.slide = this.slide;
+    	        o.path.slide = this.slide;
+                o.path.fill = 'transparent';
 		wbObjCreatedHandler(o.path);
 	};
 	function scrollHandler(e) {

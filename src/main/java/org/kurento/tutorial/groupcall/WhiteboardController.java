@@ -44,7 +44,6 @@ import javax.imageio.ImageIO;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.io.ByteArrayOutputStream;
 
 
@@ -325,7 +324,7 @@ public class WhiteboardController {
         if (wb == null) {
             return;
         }
-        JSONArray arr = getArray(wb.toJson(), null);
+        JSONArray arr = getArray(wb.toJson());
         if (arr.length() != 0) {
             room.addUndo(wb.getId(), new UndoObject(UndoObject.Type.remove, arr));
         }
@@ -334,14 +333,11 @@ public class WhiteboardController {
         room.sendWbAll(WbAction.setSize, getAddWbJson(wb));
     }
 
-    private static JSONArray getArray(JSONObject wb, Function<JSONObject, JSONObject> postprocess) {
+    private static JSONArray getArray(JSONObject wb) {
         JSONObject items = wb.getJSONObject(ITEMS_KEY);
         JSONArray arr = new JSONArray();
         for (String uid : items.keySet()) {
             JSONObject o = items.getJSONObject(uid);
-            if (postprocess != null) {
-                o = postprocess.apply(o);
-            }
             arr.put(o);
         }
         return arr;

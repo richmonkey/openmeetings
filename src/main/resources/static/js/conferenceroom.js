@@ -33,8 +33,17 @@ function register() {
     document.getElementById('room-header').innerText = 'ROOM ' + room;
     document.getElementById('join').style.display = 'none';
     document.getElementById('room').style.display = 'block';
-    
-    ws = new WebSocket('ws://' + location.host + '/groupcall');
+
+    pingTimer = setInterval(ping, 10*1000);
+    openWebsocket();
+}
+
+function openWebsocket() {
+    if ("https:" === location.protocol) {
+        ws = new WebSocket('wss://' + location.host + '/groupcall');
+    } else {
+        ws = new WebSocket('ws://' + location.host + '/groupcall');
+    }
 
     ws.onopen = function (event) {
         var message = {
@@ -43,7 +52,7 @@ function register() {
 	    room : room,
         }
         sendMessage(message);
-        pingTimer = setInterval(ping, 10*1000);
+
     };
     
     ws.onmessage = function(message) {
@@ -71,10 +80,15 @@ function register() {
     ws.onclose = function(e) {
         console.log("websockets on close:", e.code, e.reason, e.wasClean);
         //todo exit or reconnect
-    }    
+    } 
 }
-
 function ping() {
+    console.log("websocket state:", ws ? ws.readyState : 'null');
+    if (!ws || ws.readyState == WebSocket.CLOSED) {
+        openWebsocket();
+        return;
+    }
+    
     var message = {
 	id : 'ping'
     }
@@ -94,7 +108,8 @@ function onExistingParticipants(msg) {
         var participant = new Participant(name);
         participants[name] = participant;          
     });
-    getWhiteboards();
+
+    getWhiteboards();    
 }
 
 function getWhiteboards() {
@@ -121,7 +136,7 @@ function getWhiteboards() {
                     WbArea.load(shapes);
                 }
             }
-            
+
             WbArea.activateWb({wbId:respObj.activeId});
             if (respObj.slide) {
                 WbArea.setSlide(respObj.slide);
@@ -159,7 +174,7 @@ function sendMessage(message) {
         return;
     }    
     var jsonMessage = JSON.stringify(message);
-    console.log('Senging message: ' + jsonMessage);
+    console.log('Senging message: ', jsonMessage.length, jsonMessage);
     ws.send(jsonMessage);
 }
 

@@ -37,10 +37,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.socket.client.standard.WebSocketContainerFactoryBean;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
+import javax.websocket.ContainerProvider;
 import java.io.File;
 import java.util.Arrays;
 
@@ -75,7 +78,6 @@ public class GroupCallApp implements WebSocketConfigurer, ApplicationRunner{
   }
 
 
-
     @Bean
     public FileProcessor fileProcessor() {
         return new FileProcessor();
@@ -108,6 +110,18 @@ public class GroupCallApp implements WebSocketConfigurer, ApplicationRunner{
     app.setAddCommandLineProperties(false);
     app.run(args);
   }
+
+
+  @Bean
+  public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
+    ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+
+    container.setMaxTextMessageBufferSize(64*1024);
+    container.setMaxBinaryMessageBufferSize(64*1024);
+    ContainerProvider.getWebSocketContainer().setDefaultMaxTextMessageBufferSize(64*1024);
+    return container;
+  }
+
 
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

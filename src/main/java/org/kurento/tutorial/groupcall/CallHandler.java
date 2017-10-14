@@ -24,8 +24,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.function.Function;
-
 
 import com.github.openjson.JSONArray;
 import com.github.openjson.JSONObject;
@@ -469,14 +467,11 @@ public class CallHandler extends TextWebSocketHandler {
 
     }
 
-    private static JSONArray getArray(JSONObject wb, Function<JSONObject, JSONObject> postprocess) {
+    private static JSONArray getArray(JSONObject wb) {
         JSONObject items = wb.getJSONObject(ITEMS_KEY);
         JSONArray arr = new JSONArray();
         for (String uid : items.keySet()) {
             JSONObject o = items.getJSONObject(uid);
-            if (postprocess != null) {
-                o = postprocess.apply(o);
-            }
             arr.put(o);
         }
         return arr;
@@ -487,7 +482,7 @@ public class CallHandler extends TextWebSocketHandler {
         if (wb == null) {
             return;
         }
-        JSONArray arr = getArray(wb.toJson(), null);
+        JSONArray arr = getArray(wb.toJson());
         if (arr.length() != 0) {
             addUndo(user, wb.getId(), new UndoObject(UndoObject.Type.remove, arr));
         }

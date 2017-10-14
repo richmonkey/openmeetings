@@ -51,7 +51,7 @@ public class UserRegistry {
   }
 
   public boolean exists(String name) {
-    return usersByName.keySet().contains(name);
+    return usersByName.containsKey(name);
   }
 
   public UserSession removeBySession(WebSocketSession session) {

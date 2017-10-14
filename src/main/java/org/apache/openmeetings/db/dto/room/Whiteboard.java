@@ -19,12 +19,7 @@
 package org.apache.openmeetings.db.dto.room;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.openmeetings.util.NullStringer;
@@ -47,7 +42,7 @@ public class Whiteboard implements Serializable {
 	private ZoomMode zoomMode = ZoomMode.fullFit;
 	private int width = DEFAULT_WIDTH;
 	private int height = DEFAULT_HEIGHT;
-	private Map<String, String> roomItems = Collections.synchronizedMap(new LinkedHashMap<>());
+	private Map<String, String> roomItems = Collections.synchronizedMap(new LinkedHashMap<String, String>());
 	private Date created = new Date();
 	private int slide = 0;
 	private String name;
@@ -112,14 +107,30 @@ public class Whiteboard implements Serializable {
 
 	public JSONArray clearSlide(int slide) {
 		JSONArray arr = new JSONArray();
-		roomItems.entrySet().removeIf(e -> {
-				JSONObject o = new JSONObject(e.getValue());
-				boolean match = !"Presentation".equals(o.optString("fileType")) && o.optInt("slide", -1) == slide;
-				if (match) {
-					arr.put(e);
-				}
-				return match;
-			});
+
+		//java1.7
+		for (Entry<String, String> e: roomItems.entrySet()) {
+			JSONObject o = new JSONObject(e.getValue());
+			boolean match = !"Presentation".equals(o.optString("fileType")) && o.optInt("slide", -1) == slide;
+			if (match) {
+				arr.put(e);
+			}
+		}
+
+		for (int i = 0; i < arr.length(); i++) {
+			Object o = arr.get(i);
+			roomItems.entrySet().remove(o);
+		}
+
+		//java 1.8
+//		roomItems.entrySet().removeIf(e -> {
+//				JSONObject o = new JSONObject(e.getValue());
+//				boolean match = !"Presentation".equals(o.optString("fileType")) && o.optInt("slide", -1) == slide;
+//				if (match) {
+//					arr.put(e);
+//				}
+//				return match;
+//			});
 		return arr;
 	}
 

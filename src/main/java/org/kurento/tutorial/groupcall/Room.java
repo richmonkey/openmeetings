@@ -71,7 +71,7 @@ public class Room implements Closeable {
         }
 
         if (!undoList.containsKey(wbId)) {
-            undoList.put(wbId, new LimitedLinkedList<>());
+            undoList.put(wbId, new LimitedLinkedList<UndoObject>());
         }
         undoList.get(wbId).push(u);
     }
