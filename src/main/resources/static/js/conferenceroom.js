@@ -141,7 +141,7 @@ function getWhiteboards() {
             WbArea.setRole('presenter');
             var arr = respObj.whiteboards;
             for (var i = 0; i < arr.length; i++) {
-                var obj = arr[0];
+                var obj = arr[i];
                 console.log("obj:", obj.wbId, obj.name, obj.width, obj.height, obj.zoom, obj.zoomMode, obj.obj);
                 WbArea.create({wbId:obj.wbId, name:obj.name,
                                width:obj.width, height:obj.height,
@@ -153,7 +153,7 @@ function getWhiteboards() {
                 }
 
                 //support only one whiteboard
-                break;
+                //break;
             }
 
             WbArea.activateWb({wbId:respObj.activeId});

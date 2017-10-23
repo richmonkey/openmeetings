@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     <link rel="styleSheet" href="css/theme/jquery-ui.css" type="text/css">
-    <link rel="styleSheet" href="css/general.css" type="text/css">
+    <!-- <link rel="styleSheet" href="css/general.css" type="text/css"> -->
     <link rel="styleSheet" href="css/style.css" type="text/css">
     <link rel="styleSheet" href="css/wb.css" type="text/css" >
-    <link rel="styleSheet" href="css/room.css" type="text/css" >
+    <!-- <link rel="styleSheet" href="css/room.css" type="text/css" > -->
 
     <script src="./js/jquery-3.2.1.min.js"></script>
     <script src="./js/jquery-ui.js"></script>
@@ -47,7 +47,11 @@
                     <div class="wb-drop-area"></div>
                     <div class="wb-area" id="whiteboard">
                         <div class="tabs">
-                            <div class="wb-tabbar ui-corner-all ui-widget-header">
+                            <div class="wb-tabbar ui-widget-header">
+                                <div id="wb-tabbar-ctrls-left">
+                                    <div class="add clickable om-icon big"></div>
+                                </div>
+
                                 <div class="scroll-container">
                                     <ul class="scrollable">
                                         <!-- add  tab item-->
@@ -59,20 +63,17 @@
                         </div>
 
                         <div style="display:none;">
-                            <div id="wb-tabbar-ctrls-left">
-                                <div class="add clickable om-icon big"></div>
-                            </div>
+
                             <ul>
                                 <li id="wb-area-tab">
                                     <a>[title]</a>
+                                    <button id="wb-tab-close" type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+                                            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+                                            <span class="ui-button-icon-space"> </span>
+                                    </button>
                                 </li>
+
                             </ul>
-
-                            <button id="wb-tab-close" type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
-			                        <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
-			                        <span class="ui-button-icon-space"> </span>
-		                    </button>
-
 
                             <div id="wb-area-cliparts" class="btn-group" style="float: left;">
                                 <a class="dropdown-toggle" data-toggle="dropdown" title="剪贴画" aria-expanded="false">
@@ -145,7 +146,8 @@
 				                    <option value="4.00">400%</option>
 			                        </select>
                             </div>
-                            <div id="wb-tools" class="tools ui-state-active vertical clear horisontal" style="position: absolute; bottom: 0px; left: 0px;margin-left:5px;">
+                            <!-- <div id="wb-tools" class="tools ui-state-active vertical clear horisontal" style="position: absolute; bottom: 0px; left: 0px;margin-left:5px;"> -->
+                            <div id="wb-tools" class="tools ui-state-active vertical clear" style="position: absolute; top: 0px; right: 0px;">
                                 <div class="bumper"></div>
                                 <div title="Clear whiteboard" class="ui-widget-header clickable om-icon big clear-all"></div>
                                 <div title="clear-slide" class="ui-widget-header clickable om-icon big clear-slide"></div>

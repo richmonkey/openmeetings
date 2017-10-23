@@ -284,7 +284,7 @@ var APointer = function(wb) {
 	var pointer = Base();
 	pointer.user = '';
 	pointer.create = function(canvas, o) {
-		fabric.Image.fromURL('./images/pointer.png', function(img) {
+		fabric.Image.fromURL('./css/images/pointer.png', function(img) {
 			img.set({
 				left:15
 				, originX: 'right'
@@ -1563,29 +1563,6 @@ var WbArea = (function() {
 		role = _role;
 		var tabsNav = tabs.find(".ui-tabs-nav");
 		tabsNav.sortable(role === PRESENTER ? "enable" : "disable");
-		var prev = tabs.find('.prev.om-icon'), next = tabs.find('.next.om-icon');
-		if (role === PRESENTER) {
-			if (prev.length == 0) {
-				var cc = tabs.find('.wb-tabbar .scroll-container')
-					, left = $('#wb-tabbar-ctrls-left').clone().attr('id', '');
-				cc.before(left);
-				tabs.find('.add.om-icon').click(function() {
-					wbAction('createWb');
-				});
-				tabsNav.find('li').each(function(idx) {
-					var li = $(this);
-					_addCloseBtn(li);
-				});
-				$(window).keyup(deleteHandler);
-			}
-		} else {
-			if (prev.length > 0) {
-				prev.parent().remove();
-				next.parent().remove();
-				tabsNav.find('li button').remove();
-			}
-			$(window).off('keyup', deleteHandler);
-		}
 		tabs.find(".ui-tabs-panel").each(function(idx) {
 			$(this).data().setRole(role);
 		});
@@ -1604,6 +1581,7 @@ var WbArea = (function() {
 				wbAction('activateWb', JSON.stringify({wbId: ui.newTab.data('wb-id')}));
 			}
 		});
+
 		scroll = tabs.find('.scroll-container');
 		area = container.find(".wb-area");
 		tabs.find(".ui-tabs-nav").sortable({
@@ -1612,6 +1590,11 @@ var WbArea = (function() {
 				refreshTabs();
 			}
 		});
+		tabs.find('.add.om-icon').click(function() {
+			wbAction('createWb');
+		});
+
+		$(window).keyup(deleteHandler);
 		_inited = true;
 		self.setRole(role);
 	};
@@ -1620,6 +1603,9 @@ var WbArea = (function() {
 	};
 	self.create = function(obj) {
 		if (!_inited) return;
+
+		console.log("create wb:", obj);
+
 		var tid = self.getWbTabId(obj.wbId)
 			, li = $('#wb-area-tab').clone().attr('id', '').data('wb-id', obj.wbId)
 			, wb = $('#wb-area').clone().attr('id', tid);
@@ -1628,7 +1614,11 @@ var WbArea = (function() {
 		tabs.find(".ui-tabs-nav").append(li);
 		tabs.append(wb);
 		refreshTabs();
-		_addCloseBtn(li);
+
+		li.find('button').click(function() {
+			wbAction('removeWb', JSON.stringify({wbId: li.data().wbId}));
+		});
+
 
 		var wbo = Wb();
 		wbo.init(obj, tid, role);
@@ -1637,6 +1627,7 @@ var WbArea = (function() {
 	}
 	self.createWb = function(obj) {
 		if (!_inited) return;
+		console.log("create wb:", obj);
 		self.create(obj);
 		self.setRole(role);
 		_activateTab(obj.wbId);

@@ -83,6 +83,8 @@ public class WhiteboardController {
         Whiteboards wbs = WhiteboardCache.get(roomId);
         for (Entry<Long, Whiteboard> entry : WhiteboardCache.list(roomId, langId)) {
             Whiteboard wb = entry.getValue();
+            log.info("whiteboard id: {}", wb.getId());
+
             JSONObject wbObj = getAddWbJson(wb);
             JSONArray arr = new JSONArray();
             for (JSONObject o : wb.list()) {
