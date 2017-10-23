@@ -316,7 +316,7 @@ var APointer = function(wb) {
 				left: o.x - 20
 				, top: o.y - 20
 			});
-			
+
 			canvas.add(group);
 			group.uid = o.uid;
 			group.loaded = !!o.loaded;
@@ -806,24 +806,25 @@ var Wb = function() {
 		_updateZoomPanel();
 	}
 	function internalInit() {
-		t.draggable({
-			snap: "parent"
-			, containment: "parent"
-			, scroll: false
-			, stop: function(event, ui) {
-				var pos = ui.helper.position();
-				if (pos.left == 0 || pos.left + ui.helper.width() == ui.helper.parent().width()) {
-					ui.helper.removeClass('horisontal').addClass('vertical');
-				} else if (pos.top == 0 || pos.top + ui.helper.height() == ui.helper.parent().height()) {
-					ui.helper.removeClass('vertical').addClass('horisontal');
-				}
-			}
-		});
-		z.draggable({
-			snap: "parent"
-			, containment: "parent"
-			, scroll: false
-		});
+		// t.draggable({
+		// 	snap: "parent"
+		// 	, containment: "parent"
+		// 	, scroll: false
+		// 	, stop: function(event, ui) {
+		// 		var pos = ui.helper.position();
+		// 		if (pos.left == 0 || pos.left + ui.helper.width() == ui.helper.parent().width()) {
+		// 			ui.helper.removeClass('horisontal').addClass('vertical');
+		// 		} else if (pos.top == 0 || pos.top + ui.helper.height() == ui.helper.parent().height()) {
+		// 			ui.helper.removeClass('vertical').addClass('horisontal');
+		// 		}
+		// 	}
+		// });
+		// z.draggable({
+		// 	snap: "parent"
+		// 	, containment: "parent"
+		// 	, scroll: false
+		// });
+
 		var _firstToolItem = true;
 		var clearAll = t.find('.om-icon.clear-all');
 		switch (role) {
@@ -934,20 +935,21 @@ var Wb = function() {
 				s.find('.ui-dialog-titlebar-close').click(function() {
 					s.hide();
 				});
-				s.draggable({
-					scroll: false
-					, containment: "body"
-					, start: function(event, ui) {
-						if (!!s.css("bottom")) {
-							s.css("bottom", "").css("right", "");
-						}
-					}
-					, drag: function(event, ui) {
-						if (s.position().x + s.width() >= s.parent().width()) {
-							return false;
-						}
-					}
-				});
+
+				// s.draggable({
+				// 	scroll: false
+				// 	, containment: "body"
+				// 	, start: function(event, ui) {
+				// 		if (!!s.css("bottom")) {
+				// 			s.css("bottom", "").css("right", "");
+				// 		}
+				// 	}
+				// 	, drag: function(event, ui) {
+				// 		if (s.position().x + s.width() >= s.parent().width()) {
+				// 			return false;
+				// 		}
+				// 	}
+				// });
 			case NONE:
 				_updateZoomPanel();
 				z.find('.zoom-out').click(function() {
@@ -1448,7 +1450,7 @@ var Wb = function() {
 	return wb;
 };
 var WbArea = (function() {
-	var container, area, tabs, scroll, role = NONE, self = {}, _inited = false;
+	var container, area, tabs, scroll, role = PRESENTER, self = {}, _inited = false;
 
 	function refreshTabs() {
 		tabs.tabs("refresh").find('ul').removeClass('ui-corner-all').removeClass('ui-widget-header');
@@ -1565,17 +1567,10 @@ var WbArea = (function() {
 		if (role === PRESENTER) {
 			if (prev.length == 0) {
 				var cc = tabs.find('.wb-tabbar .scroll-container')
-					, left = $('#wb-tabbar-ctrls-left').clone().attr('id', '')
-					, right = $('#wb-tabbar-ctrls-right').clone().attr('id', '');
-				cc.before(left).after(right);
+					, left = $('#wb-tabbar-ctrls-left').clone().attr('id', '');
+				cc.before(left);
 				tabs.find('.add.om-icon').click(function() {
 					wbAction('createWb');
-				});
-				tabs.find('.prev.om-icon').click(function() {
-					scroll.scrollLeft(scroll.scrollLeft() - 30);
-				});
-				tabs.find('.next.om-icon').click(function() {
-					scroll.scrollLeft(scroll.scrollLeft() + 30);
 				});
 				tabsNav.find('li').each(function(idx) {
 					var li = $(this);
@@ -1629,12 +1624,12 @@ var WbArea = (function() {
 			, li = $('#wb-area-tab').clone().attr('id', '').data('wb-id', obj.wbId)
 			, wb = $('#wb-area').clone().attr('id', tid);
 		li.find('a').text(obj.name).attr('title', obj.name).attr('href', "#" + tid);
-	
+
 		tabs.find(".ui-tabs-nav").append(li);
 		tabs.append(wb);
 		refreshTabs();
 		_addCloseBtn(li);
-	
+
 		var wbo = Wb();
 		wbo.init(obj, tid, role);
 		wb.data(wbo);
@@ -1673,7 +1668,6 @@ var WbArea = (function() {
 	self.clearAll = function(json) {
 		if (!_inited) return;
 		self.getWb(json.wbId).clearAll();
-		Room.setSize();
 	};
 	self.clearSlide = function(json) {
 		if (!_inited) return;
@@ -1724,25 +1718,3 @@ var WbArea = (function() {
 	self.initVideos = _initVideos;
 	return self;
 })();
-$(function() {
-	//Wicket.Event.subscribe("/websocket/message", function(jqEvent, msg) {
-	//        try {
-	//        	if (msg instanceof Blob) {
-	//        		return; //ping
-	//        	}
-	//        	var m = jQuery.parseJSON(msg);
-	//        	if (m) {
-	//        		switch(m.type) {
-	//        			case "wb":
-	//        				if (typeof WbArea !== 'undefined') {
-	//        					eval(m.func);
-	//        				}
-	//        				break;
-	//        		}
-	//        	}
-	//        } catch (err) {
-	//        	console.log(err);
-	//        	//no-op
-	//        }
-	//});
-});

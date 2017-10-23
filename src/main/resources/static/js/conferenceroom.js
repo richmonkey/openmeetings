@@ -29,7 +29,7 @@ function register() {
     name = document.getElementById('name').value;
     room = document.getElementById('roomName').value;
     console.log("room:", room);
-    
+
     document.getElementById('room-header').innerText = 'ROOM ' + room;
     document.getElementById('join').style.display = 'none';
     document.getElementById('room').style.display = 'block';
@@ -38,12 +38,28 @@ function register() {
     openWebsocket();
 }
 
+
+function register2(name, room) {
+    console.log("room:", room);
+
+    document.getElementById('room-header').innerText = 'ROOM ' + room;
+    document.getElementById('join').style.display = 'none';
+    document.getElementById('room').style.display = 'block';
+
+    pingTimer = setInterval(ping, 10*1000);
+    openWebsocket();
+}
+
+
 function openWebsocket() {
-    if ("https:" === location.protocol) {
-        ws = new WebSocket('wss://' + location.host + '/groupcall');
-    } else {
-        ws = new WebSocket('ws://' + location.host + '/groupcall');
-    }
+    console.log("location host:", location.host);
+   if ("https:" === location.protocol) {
+       ws = new WebSocket('wss://' + location.host + '/groupcall');
+   } else {
+       ws = new WebSocket('ws://' + location.host + '/groupcall');
+   }
+
+
 
     ws.onopen = function (event) {
         var message = {
@@ -54,7 +70,7 @@ function openWebsocket() {
         sendMessage(message);
 
     };
-    
+
     ws.onmessage = function(message) {
         var parsedMessage = JSON.parse(message.data);
         console.info('Received message: ' + message.data);
@@ -80,7 +96,7 @@ function openWebsocket() {
     ws.onclose = function(e) {
         console.log("websockets on close:", e.code, e.reason, e.wasClean);
         //todo exit or reconnect
-    } 
+    }
 }
 function ping() {
     console.log("websocket state:", ws ? ws.readyState : 'null');
@@ -88,16 +104,16 @@ function ping() {
         openWebsocket();
         return;
     }
-    
+
     var message = {
 	id : 'ping'
     }
-    sendMessage(message);    
+    sendMessage(message);
 }
 
 function onNewParticipant(request) {
     var participant = new Participant(request.name);
-    participants[request.name] = participant;    
+    participants[request.name] = participant;
 }
 
 function onExistingParticipants(msg) {
@@ -106,10 +122,10 @@ function onExistingParticipants(msg) {
     participants[name] = participant;
     msg.data.forEach(function(name) {
         var participant = new Participant(name);
-        participants[name] = participant;          
+        participants[name] = participant;
     });
 
-    getWhiteboards();    
+    getWhiteboards();
 }
 
 function getWhiteboards() {
@@ -130,11 +146,14 @@ function getWhiteboards() {
                 WbArea.create({wbId:obj.wbId, name:obj.name,
                                width:obj.width, height:obj.height,
                                zoom:obj.zoom, zoomMode:obj.zoomMode});
-                
+
                 if (obj.obj && obj.obj.length > 0) {
                     var shapes = {wbId:obj.wbId, obj:obj.obj}
                     WbArea.load(shapes);
                 }
+
+                //support only one whiteboard
+                break;
             }
 
             WbArea.activateWb({wbId:respObj.activeId});
@@ -143,7 +162,7 @@ function getWhiteboards() {
             }
         }
     }
-    xmlHttp.open("GET", "/whiteboards?room="+room, true); // true for asynchronous 
+    xmlHttp.open("GET", "/whiteboards?room="+room, true); // true for asynchronous
     xmlHttp.send(null);
 }
 
@@ -172,7 +191,7 @@ function sendMessage(message) {
     if (!ws || ws.readyState != WebSocket.OPEN) {
         console.log("websocket closed, can't send message");
         return;
-    }    
+    }
     var jsonMessage = JSON.stringify(message);
     console.log('Senging message: ', jsonMessage.length, jsonMessage);
     ws.send(jsonMessage);
@@ -185,5 +204,9 @@ function wbAction(action, shape) {
     sendMessage({
 	id : action,
         obj:shape
-    });    
+    });
 }
+
+$(document).ready(function() {
+    register();
+})
