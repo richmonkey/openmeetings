@@ -805,6 +805,7 @@ var Wb = function() {
 		}));
 		_updateZoomPanel();
 	}
+
 	function internalInit() {
 		// t.draggable({
 		// 	snap: "parent"
@@ -829,9 +830,11 @@ var Wb = function() {
 		var clearAll = t.find('.om-icon.clear-all');
 		switch (role) {
 			case PRESENTER:
-			        clearAll.click(function() {
-                                    wbAction('clearAll', JSON.stringify({wbId: wb.id}));
-                                });
+		        clearAll.click(function() {
+		            wbAction('clearAll', JSON.stringify({
+		                wbId: wb.id
+		            }));
+		        });
 				z.find('.curr-slide').change(function() {
 					_setSlide($(this).val() - 1);
 					showCurrentSlide();

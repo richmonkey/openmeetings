@@ -35,21 +35,80 @@ function register() {
     document.getElementById('room').style.display = 'block';
 
     pingTimer = setInterval(ping, 10*1000);
+    var element = document.getElementById("wb-drag-board");
+    dragEvent(element, "wb-drag-board");
+    element = document.getElementById("wb-drop-area");
+    dragEvent(element, "wb-drop-area");
+
     openWebsocket();
 }
 
 
-function register2(name, room) {
-    console.log("room:", room);
+function uploadFile(f) {
+    var formData = new FormData();
+    formData.append("room", room);
+    formData.append("file", f);
 
-    document.getElementById('room-header').innerText = 'ROOM ' + room;
-    document.getElementById('join').style.display = 'none';
-    document.getElementById('room').style.display = 'block';
+    var request = new XMLHttpRequest();
 
-    pingTimer = setInterval(ping, 10*1000);
-    openWebsocket();
+    request.open("POST", "/files", true);
+
+    request.onload = function(result) {
+        if (request.status == 200) {
+            console.log("upload success:", result);
+        } else {
+            console.log("upload error:", result);
+        }
+    }
+    request.send(formData);
 }
 
+function dragEvent(element, name) {
+
+    ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function(event) {
+        element.addEventListener(event, function(e) {
+            // preventing the unwanted behaviours
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+    ['dragover', 'dragenter'].forEach(function(event) {
+        element.addEventListener(event, function() {
+            console.log("drag event:", name, event);
+            element.classList.add('is-dragover');
+        });
+    });
+    ['dragleave', 'dragend', 'drop'].forEach(function(event) {
+        element.addEventListener(event, function() {
+            console.log("remove dragover:", name, event);
+            element.classList.remove('is-dragover');
+        });
+    });
+    element.addEventListener('drop', function(e) {
+        var droppedFiles = e.dataTransfer.files; // the files that were dropped
+        console.log("dropped files:", name, droppedFiles);
+
+        if (droppedFiles.length == 0) {
+            return;
+        }
+        if (droppedFiles.length > 1) {
+            alert("不支持多个文件");
+            return;
+        }
+        var f = droppedFiles[0];
+        var arr = f.name.split(".");
+        if (arr.length != 2) {
+            alert("不支持的文件格式");
+            return;
+        }
+        var ext = arr[1];
+        if (ext != "png") {
+            alert("不支持的文件格式");
+            return;
+        }
+        uploadFile(f);
+    });
+}
 
 function openWebsocket() {
     console.log("location host:", location.host);
