@@ -1,24 +1,14 @@
 
 var WbArea = (function() {
 	var container, area, tabs, role = PRESENTER, self = {}, _inited = false;
+    var activeId;
 
-
-	function getActive() {
-		var idx = tabs.tabs("option", 'active');
-		if (idx > -1) {
-			var href = tabs.find('a')[idx];
-			if (!!href) {
-				return $($(href).attr('href'));
-			}
-		}
-		return null;
-	}
 	function deleteHandler(e) {
 		switch (e.which) {
 			case 8:  // backspace
 			case 46: // delete
 				{
-					var wb = getActive().data();
+                    var wb = self.getWb(activeId);
 					var canvas = wb.getCanvas();
 					if (!!canvas) {
 						var arr = [];
@@ -48,15 +38,7 @@ var WbArea = (function() {
 				break;
 		}
 	}
-	function _activateTab(wbId) {
-		container.find('.wb-tabbar li').each(function(idx) {
-			if (wbId == 1 * $(this).data('wb-id')) {
-				tabs.tabs("option", "active", idx);
-				$(this)[0].scrollIntoView();
-				return false;
-			}
-		});
-	}
+
 	function _resizeWbs() {
 		var w = area.width(), hh = area.height();
 		var wbTabs = area.find(".tabs.ui-tabs");
@@ -118,33 +100,27 @@ var WbArea = (function() {
 		var tid = self.getWbTabId(obj.wbId)
 				, wb = $('#wb-area').clone().attr('id', tid);
 	
-		tabs.append(wb);
-
+        tabs.append(wb);
+        
 		var wbo = Wb();
 		wbo.init(obj, tid, role);
         wb.data(wbo);
 
-
         var w = area.width(), hh = area.height();
         var wbah = hh - 5;
-        
-                
         area.find(".scroll-container").height(wbah);
-        
         wbo.resize(w-25, wbah - 20);
-
-
     }
 	self.createWb = function(obj) {
 		if (!_inited) return;
 		console.log("create wb:", obj);
 		self.create(obj);
-		self.setRole(role);
-		_activateTab(obj.wbId);
+        self.setRole(role);
+        activeId = obj.wbId;
 	};
 	self.activateWb = function(obj) {
 		if (!_inited) return;
-		_activateTab(obj.wbId);
+        activeId = obj.wbId;
 	}
 	self.load = function(json) {
 		if (!_inited) return;
@@ -190,7 +166,7 @@ var WbArea = (function() {
 		self.getWb(json.wbId).setSize(json);
 	}
 	self.download = function(fmt) {
-		var wb = getActive().data();
+        var wb = self.getWb(activeId);
 		if ('pdf' === fmt) {
 			var arr = [];
 			wb.eachCanvas(function(cnv) {
