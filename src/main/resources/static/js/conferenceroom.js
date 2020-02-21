@@ -25,14 +25,20 @@ window.onbeforeunload = function() {
     ws.close();
 };
 
+
+function getURLParameter(name, search) {
+    search = search || location.search
+    var param = search.match(
+        RegExp(name + '=' + '(.+?)(&|$)'))
+    return param ? decodeURIComponent(param[1]) : undefined;
+}
+
 function register() {
-    name = document.getElementById('name').value;
-    room = document.getElementById('roomName').value;
-    console.log("room:", room);
+    name = getURLParameter("name");
+    room = getURLParameter("room");
+    console.log("room:", room, "name:", name);
 
     document.getElementById('room-header').innerText = 'ROOM ' + room;
-    document.getElementById('join').style.display = 'none';
-    document.getElementById('room').style.display = 'block';
 
     pingTimer = setInterval(ping, 10*1000);
     var element = document.getElementById("wb-drag-board");
@@ -212,7 +218,7 @@ function getWhiteboards() {
                 }
 
                 //support only one whiteboard
-                //break;
+                break;
             }
 
             WbArea.activateWb({wbId:respObj.activeId});

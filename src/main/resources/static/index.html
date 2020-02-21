@@ -12,7 +12,9 @@
     <script src="./js/jquery-ui.js"></script>
 
     <script src="./js/fabric.js"></script>
+    <script src="./js/graph.js"></script>
     <script src="./js/wb.js"></script>
+    <script src="./js/wb_area.js"></script>
 
     <script src="./js/participant.js"></script>
     <script src="./js/conferenceroom.js"></script>
@@ -23,41 +25,16 @@
     <div id="container">
         <div id="wrapper">
 
-            <div id="join" class="animate join">
-                <h1>Join a Room</h1>
-                <form onsubmit="register(); return false;" accept-charset="UTF-8">
-                    <p>
-                        <input type="text" name="name" value="1" id="name" placeholder="Username" required>
-                    </p>
-                    <p>
-                        <input type="text" name="room" value="1" id="roomName" placeholder="Room" required>
-                    </p>
-                    <p class="submit">
-                        <input type="submit" name="commit" value="Join!">
-                    </p>
-                </form>
-            </div>
 
 
-            <div style="display: none;" class="room" id="room">
+
+            <div style="display: block;" class="room" id="room">
                 <h2 id="room-header"></h2>
                 <div id="participants"></div>
 
                 <div id="wb-drag-board" class="room wb area">
-                    <div  class="wb-area" >
+                    <div  class="wb-area"  style="border:5px solid red;" >
                         <div class="tabs">
-                            <div class="wb-tabbar ui-widget-header">
-                                <div id="wb-tabbar-ctrls-left">
-                                    <div class="add clickable om-icon big"></div>
-                                </div>
-
-                                <div class="scroll-container">
-                                    <ul class="scrollable">
-                                        <!-- add  tab item-->
-                                    </ul>
-                                </div>
-                            </div>
-
                             <!-- add  whiteboard -->
                         </div>
 
@@ -117,16 +94,6 @@
 
 
                             <div id="wb-zoom" class="wb-zoom" style="position: absolute; top: 0px; left: 80px;">
-                                <div class="doc-group btn-group btn-group-xs block" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-default up" title="Go to previous page">&nbsp;</button>
-                                    <button type="button" class="btn btn-default down" title="Go to previous page">&nbsp;</button>
-                                </div>
-                                <div class="doc-group input-group input-group-xs block">
-                                    <input class="curr-slide" type="number" min="1" max="1" />
-                                    <span class="input-group-addon"><wicket:message key="254"/></span>
-                                    <span class="last-page input-group-addon">1</span>
-                                </div>
-                                &nbsp;&nbsp;&nbsp;&nbsp;
                                 <div class="btn-group btn-group-xs block" role="group" aria-label="...">
                                     <button type="button" class="btn btn-default zoom-out" title="Zoom --"><span class="ui-icon ui-icon-minusthick"></span></button>
                                     <button type="button" class="btn btn-default zoom-in" title="Zoom ++"><span class="ui-icon ui-icon-plusthick"></span></button>
