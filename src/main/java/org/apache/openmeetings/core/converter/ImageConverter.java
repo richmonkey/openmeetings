@@ -47,11 +47,10 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.image.ImageParser;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
 import org.xml.sax.helpers.DefaultHandler;
 
-@Component
+
 public class ImageConverter  {
 	private static final Logger log = LoggerFactory.getLogger(ImageConverter.class);
 	private static final String PAGE_TMPLT = DOC_PAGE_PREFIX + "-%04d." + EXTENSION_PNG;

@@ -40,9 +40,9 @@ import org.apache.openmeetings.util.process.ConverterProcessResult;
 import org.apache.openmeetings.util.process.ProcessHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
+
+
 public class FlvExplorerConverter  {
 	private static final Logger log = LoggerFactory.getLogger(FlvExplorerConverter.class);
 	private static final Pattern p = Pattern.compile("\\d{2,5}(x)\\d{2,5}");

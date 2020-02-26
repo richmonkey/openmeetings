@@ -37,13 +37,14 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,12 +55,9 @@ import javax.imageio.ImageIO;
 
 import static org.apache.openmeetings.db.dto.room.Whiteboard.ITEMS_KEY;
 
-/**
- *
- * @author Ivan Gracia (izanmail@gmail.com)
- * @since 4.3.1
- */
-public class CallHandler extends TextWebSocketHandler {
+
+@WebSocket
+public class CallHandler {
 
   private static final Logger log = LoggerFactory.getLogger(CallHandler.class);
 
@@ -71,77 +69,112 @@ public class CallHandler extends TextWebSocketHandler {
   public static String redisPassword;
   public static int redisDB;
 
-  @Autowired
+
   private RoomManager roomManager;
 
-  @Autowired
+
   private UserRegistry registry;
 
-  @Override
-  public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-    final JsonObject jsonMessage = gson.fromJson(message.getPayload(), JsonObject.class);
+    @OnWebSocketConnect
+    public void onConnect(Session user) throws Exception {
+        log.info("connection established:", user.getRemoteAddress());
 
-    final UserSession user = registry.getBySession(session);
+        authPass = GroupCallApp.authPass;
+        redisHost = GroupCallApp.redisHost;
+        redisPort = GroupCallApp.redisPort;
+        redisPassword = GroupCallApp.redisPassword;
+        redisDB = GroupCallApp.redisDB;
 
-    if (user != null) {
-      log.debug("Incoming message from user '{}': {}", user.getName(), jsonMessage);
-    } else {
-      log.debug("Incoming message from new user: {}", jsonMessage);
+        registry = GroupCallApp.registry;
+        roomManager = GroupCallApp.roomManager;
     }
 
-    String id = jsonMessage.get("id").getAsString();
-    switch (id) {
-        case "joinRoom":
-            joinRoom(jsonMessage, session);
-            break;
-        case "leaveRoom":
-            leaveRoom(user);
-            break;
-        case "ping":
-            break;
-        case "createWb":
-        case "removeWb":
-        case "activateWb":
-        case "setSlide":
-        case "createObj":
-        case "modifyObj":
-        case "deleteObj":
-        case "clearAll":
-        case "clearSlide":
-        case "save":
-        case "load":
-        case "undo":
-        case "setSize":
-        case "downloadPdf":
-        case "startRecording":
-        case "stopRecording":
-        case "videoStatus":
-        case "loadVideos":
-            try {
-                WbAction a = WbAction.valueOf(jsonMessage.get("id").getAsString());
-                JSONObject jobj;
-                if (jsonMessage.has("obj")) {
-                    String s = jsonMessage.get("obj").getAsString();
-                    jobj = new JSONObject(s);
-                } else {
-                    jobj = new JSONObject();
-                }
-                processWbAction(user, a, jobj);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+
+
+    @OnWebSocketClose
+    public void onClose(Session session, int statusCode, String reason) {
+        log.info("connection closed:", statusCode, reason);
+        try {
+            if (registry.getBySession(session) != null) {
+                UserSession user = registry.removeBySession(session);
+                leaveRoom(user);
             }
-            break;
-        default:
-            log.warn("unknown action id:" + id);
-            break;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    @OnWebSocketMessage
+    public void onMessage(Session user, String message) {
+        handleTextMessage(user, message);
+    }
+
+    public void handleTextMessage(Session session, String message) {
+        log.info("handle text message...:" + message);
+
+
+        try {
+            final JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
+            final UserSession user = registry.getBySession(session);
+
+            if (user != null) {
+                log.debug("Incoming message from user '{}': {}", user.getName(), jsonMessage);
+            } else {
+                log.debug("Incoming message from new user: {}", jsonMessage);
+            }
+
+            String id = jsonMessage.get("id").getAsString();
+            switch (id) {
+                case "joinRoom":
+                    joinRoom(jsonMessage, session);
+                    break;
+                case "leaveRoom":
+                    leaveRoom(user);
+                    break;
+                case "ping":
+                    break;
+                case "createWb":
+                case "removeWb":
+                case "activateWb":
+                case "setSlide":
+                case "createObj":
+                case "modifyObj":
+                case "deleteObj":
+                case "clearAll":
+                case "clearSlide":
+                case "save":
+                case "load":
+                case "undo":
+                case "setSize":
+                case "downloadPdf":
+                case "startRecording":
+                case "stopRecording":
+                case "videoStatus":
+                case "loadVideos":
+                    try {
+                        WbAction a = WbAction.valueOf(jsonMessage.get("id").getAsString());
+                        JSONObject jobj;
+                        if (jsonMessage.has("obj")) {
+                            String s = jsonMessage.get("obj").getAsString();
+                            jobj = new JSONObject(s);
+                        } else {
+                            jobj = new JSONObject();
+                        }
+                        processWbAction(user, a, jobj);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    log.warn("unknown action id:" + id);
+                    break;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            log.info("handle message exception:" + e);
+        }
   }
 
-  @Override
-  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-    UserSession user = registry.removeBySession(session);
-    roomManager.getRoom(user.getRoomName()).leave(user);
-  }
 
   private boolean auth(String token, String name) {
     Jedis jedis = new Jedis(redisHost, redisPort);
@@ -162,7 +195,7 @@ public class CallHandler extends TextWebSocketHandler {
   }
 
 
-  private void joinRoom(JsonObject params, WebSocketSession session) throws IOException {
+  private void joinRoom(JsonObject params, Session session) throws IOException {
     final String roomName = params.get("room").getAsString();
     final String name = params.get("name").getAsString();
     log.info("PARTICIPANT {}: trying to join room {}", name, roomName);

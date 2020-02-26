@@ -21,14 +21,10 @@ package org.kurento.tutorial.groupcall;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-
 import com.google.gson.JsonObject;
 
 /**
@@ -44,13 +40,13 @@ public class UserSession implements Closeable {
   public static String recorderDir = null;
 
   private final String name;
-  private final WebSocketSession session;
+  private final Session session;
 
 
   private final String roomName;
 
 
-  public UserSession(final String name, final String roomName, final WebSocketSession session) {
+  public UserSession(final String name, final String roomName, final Session session) {
 
     this.name = name;
     this.session = session;
@@ -66,7 +62,7 @@ public class UserSession implements Closeable {
     return name;
   }
 
-  public WebSocketSession getSession() {
+  public Session getSession() {
     return session;
   }
 
@@ -93,15 +89,15 @@ public class UserSession implements Closeable {
   public void sendMessage(JsonObject message) throws IOException {
     log.debug("USER {}: Sending message {}", name, message);
     synchronized (session) {
-      session.sendMessage(new TextMessage(message.toString()));
-    }
+      session.getRemote().sendString(message.toString());
+          }
   }
 
 
   public void sendMessage(String message) throws IOException {
     log.debug("USER {}: Sending message {}", name, message);
     synchronized (session) {
-      session.sendMessage(new TextMessage(message));
+      session.getRemote().sendString(message);
     }
   }
 

@@ -32,15 +32,12 @@ import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+
 public class DocumentConverter {
 	private static final Logger log = LoggerFactory.getLogger(DocumentConverter.class);
 
 
-	@Autowired
 	private ImageConverter imageConverter;
 
 	public ConverterProcessResultList convertPDF(FileItem f, StoredFile sf) throws Exception {

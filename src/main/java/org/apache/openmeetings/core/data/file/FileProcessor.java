@@ -37,26 +37,23 @@ import org.apache.openmeetings.util.process.ConverterProcessResult;
 import org.apache.openmeetings.util.process.ConverterProcessResultList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 
-@Component
+
+
 public class FileProcessor {
     private static final Logger log = LoggerFactory.getLogger(FileProcessor.class);
 
-	//Spring loaded Beans
-	@Autowired
+
 	private FlvExplorerConverter flvExplorerConverter;
 
-	@Autowired
+
 	private FileItemDao fileDao;
 
-	@Autowired
+
 	private ImageConverter imageConverter;
 
 
-	@Autowired
 	private DocumentConverter generatePDF;
 
 

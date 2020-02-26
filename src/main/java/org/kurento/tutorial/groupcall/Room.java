@@ -28,10 +28,9 @@ import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PreDestroy;
 import com.github.openjson.JSONObject;
 import org.apache.openmeetings.util.NullStringer;
+import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.WebSocketSession;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -90,7 +89,7 @@ public class Room implements Closeable {
     this.close();
   }
 
-  public UserSession join(String userName, WebSocketSession session) throws IOException {
+  public UserSession join(String userName, Session session) throws IOException {
     log.info("ROOM {}: adding participant {}", userName, userName);
     final UserSession participant = new UserSession(userName, this.name, session);
     joinRoom(participant);

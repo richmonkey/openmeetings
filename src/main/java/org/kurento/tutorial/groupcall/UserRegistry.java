@@ -21,7 +21,7 @@ package org.kurento.tutorial.groupcall;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.web.socket.WebSocketSession;
+import org.eclipse.jetty.websocket.api.Session;
 
 /**
  * Map of users registered in the system. This class has a concurrent hash map to store users, using
@@ -35,29 +35,29 @@ import org.springframework.web.socket.WebSocketSession;
 public class UserRegistry {
 
   private final ConcurrentHashMap<String, UserSession> usersByName = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<String, UserSession> usersBySessionId = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Session, UserSession> usersBySession = new ConcurrentHashMap<>();
 
   public void register(UserSession user) {
     usersByName.put(user.getName(), user);
-    usersBySessionId.put(user.getSession().getId(), user);
+    usersBySession.put(user.getSession(), user);
   }
 
   public UserSession getByName(String name) {
     return usersByName.get(name);
   }
 
-  public UserSession getBySession(WebSocketSession session) {
-    return usersBySessionId.get(session.getId());
+  public UserSession getBySession(Session session) {
+    return usersBySession.get(session);
   }
 
   public boolean exists(String name) {
     return usersByName.containsKey(name);
   }
 
-  public UserSession removeBySession(WebSocketSession session) {
+  public UserSession removeBySession(Session session) {
     final UserSession user = getBySession(session);
     usersByName.remove(user.getName());
-    usersBySessionId.remove(session.getId());
+    usersBySession.remove(session);
     return user;
   }
 

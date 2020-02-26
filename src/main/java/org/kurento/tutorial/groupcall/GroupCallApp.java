@@ -1,183 +1,174 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License") +  you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.kurento.tutorial.groupcall;
 
-
-
-import org.apache.openmeetings.core.converter.DocumentConverter;
-import org.apache.openmeetings.core.converter.FlvExplorerConverter;
-import org.apache.openmeetings.core.converter.ImageConverter;
-import org.apache.openmeetings.core.data.file.FileProcessor;
+import com.github.openjson.JSONArray;
+import com.github.openjson.JSONObject;
+import org.apache.openmeetings.core.data.whiteboard.WhiteboardCache;
 import org.apache.openmeetings.db.dao.file.FileItemDao;
-import org.apache.openmeetings.util.OmFileHelper;
-
+import org.apache.openmeetings.db.dto.room.Whiteboard;
+import org.apache.openmeetings.db.dto.room.Whiteboards;
+import org.apache.openmeetings.db.entity.file.BaseFileItem;
+import org.apache.openmeetings.db.entity.file.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.socket.client.standard.WebSocketContainerFactoryBean;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
-import javax.websocket.ContainerProvider;
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Properties;
+
+import static spark.Spark.*;
+import static spark.Spark.init;
 
 
-/**
- *
- * @author Ivan Gracia (izanmail@gmail.com)
- * @since 4.3.1
- */
-@SpringBootApplication
-@EnableWebSocket
-public class GroupCallApp implements WebSocketConfigurer, ApplicationRunner{
-
+public class GroupCallApp {
   private static final Logger log = LoggerFactory.getLogger(GroupCallApp.class);
 
-    @Autowired
-    private ApplicationContext appContext;
+  public static String PARAM_OBJ = "obj";
 
-  @Bean
-  public UserRegistry registry() {
-    return new UserRegistry();
-  }
+  static int port;
+  static String host;
+  static int maxThreads = 16;
 
-  @Bean
-  public RoomManager roomManager() {
-    return new RoomManager();
-  }
-
-  @Bean
-  public CallHandler groupCallHandler() {
-    return new CallHandler();
-  }
+  static boolean authPass;
+  public static String redisHost = "127.0.0.1";
+  public static int redisPort = 6379;
+  public static String redisPassword = "";
+  public static int redisDB = 0;
 
 
-    @Bean
-    public FileProcessor fileProcessor() {
-        return new FileProcessor();
+  static UserRegistry registry;
+  static RoomManager roomManager;
+
+  static FileItemDao fileItemDao;
+
+  public static void main(String[] args) {
+    if (args.length == 0) {
+      log.info("no config file, exit app");
+      return;
     }
 
-    @Bean
-    public FlvExplorerConverter flvExplorerConverter() {
-        return new FlvExplorerConverter();
+    try (InputStream input = new FileInputStream(args[0])) {
+      Properties props = new Properties();
+      props.load(input);
+
+      port = Integer.parseInt(props.getProperty("server.port", "0"));
+      host = props.getProperty("server.host");
+      maxThreads = Integer.parseInt(props.getProperty("server.max-threads", "16"));
+      authPass = Boolean.parseBoolean(props.getProperty("auth.pass", "false"));
+      redisHost = props.getProperty("redis.host", "127.0.0.1");
+      redisPort = Integer.parseInt(props.getProperty("redis.port", "6379"));
+      redisPassword = props.getProperty("redis.password", "");
+      redisDB = Integer.parseInt(props.getProperty("redis.db", "0"));
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      log.info("read config file failure:" + ex);
+      return;
     }
 
-    @Bean
-    public FileItemDao fileItemDao() {
-        return new FileItemDao();
+    log.info("Application started with command-line arguments: {}", Arrays.toString(args));
+    log.info("max threads:{}", maxThreads);
+    log.info("auth pass:{}", authPass);
+    log.debug("redis host:{} port:{} password:{} db:{}",
+            redisHost, redisPort, redisPassword, redisDB);
+
+
+    registry = new UserRegistry();
+    roomManager = new RoomManager();
+    fileItemDao = new FileItemDao();
+    if (host != null) {
+      ipAddress(host);
     }
-
-    @Bean
-    public ImageConverter imageConverter() {
-        return new ImageConverter();
+    if (port != 0) {
+      port(port);
     }
+    threadPool(maxThreads);
 
-    @Bean
-    public DocumentConverter documentConverter() {
-        return new DocumentConverter();
-    }
+    staticFiles.location("/static"); //index.html is served at localhost:4567 (default port)
+    webSocket("/groupcall", CallHandler.class);
 
+    get("/whiteboards", (request, response) -> {
+      String room = request.queryParams("room");
 
-
-  public static void main(String[] args) throws Exception {
-    SpringApplication app = new SpringApplication(GroupCallApp.class);
-    app.setAddCommandLineProperties(false);
-    app.run(args);
-  }
-
-
-  @Bean
-  public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
-    ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-
-    container.setMaxTextMessageBufferSize(64*1024);
-    container.setMaxBinaryMessageBufferSize(64*1024);
-    ContainerProvider.getWebSocketContainer().setDefaultMaxTextMessageBufferSize(64*1024);
-    return container;
-  }
-
-
-  @Override
-  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(groupCallHandler(), "/groupcall").setAllowedOrigins("*");
-  }
-
-  @Override
-  public void run(ApplicationArguments args) throws Exception {
-    log.info("Application started with command-line arguments: {}", Arrays.toString(args.getSourceArgs()));
-    boolean containsOption = args.containsOption("record.dir");
-    if (containsOption) {
-      log.info("arg record dir:" + args.getOptionValues("record.dir"));
-      UserSession.recorderDir = args.getOptionValues("record.dir").get(0);
-      log.info("record dir:" + UserSession.recorderDir);
-    } else {
-      log.info("record disabled");
-    }
-
-    if (args.containsOption("redis.host")) {
-      String host = args.getOptionValues("redis.host").get(0);
-      int port = 6379;
-      if (args.containsOption("redis.port")) {
-        port = Integer.parseInt(args.getOptionValues("redis.port").get(0));
+      log.info("get whiteboards:{}", room);
+      if (room == null || room.length() == 0)  {
+        JSONObject resp = new JSONObject();
+        return resp.toString();
       }
 
-      String password = "";
-      if (args.containsOption("redis.password")) {
-        password = args.getOptionValues("redis.password").get(0);
+
+      Long roomId = Long.parseLong(room);
+      long langId = 0;
+
+      JSONArray array = new JSONArray();
+      Whiteboards wbs = WhiteboardCache.get(roomId);
+      for (Map.Entry<Long, Whiteboard> entry : WhiteboardCache.list(roomId, langId)) {
+        Whiteboard wb = entry.getValue();
+        log.info("whiteboard id: {}", wb.getId());
+
+        JSONObject wbObj = getAddWbJson(wb);
+        JSONArray arr = new JSONArray();
+        for (JSONObject o : wb.list()) {
+          arr.put(addFileUrl(o));
+        }
+        wbObj.put(PARAM_OBJ, arr);
+        array.put(wbObj);
       }
 
-      int db = 0;
-      if (args.containsOption("redis.db")) {
-        db = Integer.parseInt(args.getOptionValues("redis.db").get(0));
+      JSONObject resp = new JSONObject();
+      resp.put("activeId", wbs.getActiveWb());
+      if (wbs.get(wbs.getActiveWb()) != null) {
+        resp.put("slide", wbs.get(wbs.getActiveWb()).getSlide());
       }
-      CallHandler.redisHost = host;
-      CallHandler.redisPort = port;
-      CallHandler.redisPassword = password;
-      CallHandler.redisDB = db;
-    } else {
-      CallHandler.redisHost = "127.0.0.1";
-      CallHandler.redisPort = 6379;
-      CallHandler.redisPassword = "";
-      CallHandler.redisDB = 0;
-    }
+      resp.put("whiteboards", array);
 
-    if (args.containsOption("auth.pass")) {
-      int pass = Integer.parseInt(args.getOptionValues("auth.pass").get(0));
-      CallHandler.authPass = pass == 1;
-    } else {
-      CallHandler.authPass = true;
-    }
-
-    log.info("redis host:{} port:{} password:{} db:{}",
-            CallHandler.redisHost, CallHandler.redisPort, CallHandler.redisPassword, CallHandler.redisDB);
-
-
+      log.info("whiteboards:{}", resp.toString());
+      return resp.toString();
+    });
+    init();
   }
+
+  private static JSONObject getAddWbJson(final Whiteboard wb) {
+    return new JSONObject().put("wbId", wb.getId())
+            .put("name", wb.getName())
+            .put("width", wb.getWidth())
+            .put("height", wb.getHeight())
+            .put("zoom", wb.getZoom())
+            .put("zoomMode", wb.getZoomMode());
+  }
+
+
+  public static JSONObject addFileUrl(JSONObject _file) {
+    final long fid = _file.optLong("fileId", -1);
+    if (fid != -1) {
+      FileItem fi = fileItemDao.get(fid);
+      if (fi == null) {
+        return _file;
+      }
+      return addFileUrl(_file, fi);
+    }
+    return _file;
+  }
+
+  public static JSONObject addFileUrl(JSONObject _file, BaseFileItem fi) {
+    String src;
+    switch (fi.getType()) {
+      case Video:
+      case Recording:
+        break;
+      case Presentation:
+        src = "/files/" + fi.getHash();
+        _file.put("_src", src);
+        _file.put("deleted", !fi.exists());
+        break;
+      default:
+        src = "/files/" + fi.getHash();
+        _file.put("src", src);
+        break;
+    }
+    return _file;
+  }
+
 
 }
