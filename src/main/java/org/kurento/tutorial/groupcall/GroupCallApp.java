@@ -125,7 +125,7 @@ public class GroupCallApp implements WebSocketConfigurer, ApplicationRunner{
 
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(groupCallHandler(), "/groupcall");
+    registry.addHandler(groupCallHandler(), "/groupcall").setAllowedOrigins("*");
   }
 
   @Override
