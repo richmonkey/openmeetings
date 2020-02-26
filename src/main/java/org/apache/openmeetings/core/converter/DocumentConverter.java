@@ -26,10 +26,10 @@ import org.apache.openmeetings.db.entity.file.FileItem;
 import org.apache.openmeetings.util.StoredFile;
 import org.apache.openmeetings.util.process.ConverterProcessResult;
 import org.apache.openmeetings.util.process.ConverterProcessResultList;
-import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
-import org.artofsolving.jodconverter.office.OfficeException;
-import org.artofsolving.jodconverter.office.OfficeManager;
+//import org.artofsolving.jodconverter.OfficeDocumentConverter;
+//import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
+//import org.artofsolving.jodconverter.office.OfficeException;
+//import org.artofsolving.jodconverter.office.OfficeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,22 +63,22 @@ public class DocumentConverter {
 	 */
 	public ConverterProcessResult doJodConvert(File in, File out) {
 		try {
-			String officePath = "";//todo cfg officepath
-			DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
-			if (officePath != null && officePath.length() > 0) {
-				configuration.setOfficeHome(officePath);
-			}
-			OfficeManager officeManager = configuration.buildOfficeManager();
-			officeManager.start();
-			OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
-			try {
-				converter.convert(in, out);
-			} catch (OfficeException ex) {
-				log.error("doJodConvert", ex);
-				return new ConverterProcessResult("doJodConvert", ex.getMessage(), ex);
-			} finally {
-				officeManager.stop();
-			}
+//			String officePath = "";//todo cfg officepath
+//			DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
+//			if (officePath != null && officePath.length() > 0) {
+//				configuration.setOfficeHome(officePath);
+//			}
+//			OfficeManager officeManager = configuration.buildOfficeManager();
+//			officeManager.start();
+//			OfficeDocumentConverter converter = new OfficeDocumentConverter(officeManager);
+//			try {
+//				converter.convert(in, out);
+//			} catch (OfficeException ex) {
+//				log.error("doJodConvert", ex);
+//				return new ConverterProcessResult("doJodConvert", ex.getMessage(), ex);
+//			} finally {
+//				officeManager.stop();
+//			}
 		} catch (Exception ex) {
 			log.error("doJodConvert", ex);
 			return new ConverterProcessResult("doJodConvert", ex.getMessage(), ex);

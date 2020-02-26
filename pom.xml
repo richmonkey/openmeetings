@@ -319,11 +319,13 @@
             <version>1.0.8</version>
         </dependency>
 
-		<dependency>
-			<groupId>org.artofsolving.jodconverter</groupId>
-			<artifactId>jodconverter-core</artifactId>
-			<version>3.0.1-om</version>
-		</dependency>
+
+
+<!--		<dependency>-->
+<!--			<groupId>org.artofsolving.jodconverter</groupId>-->
+<!--			<artifactId>jodconverter-core</artifactId>-->
+<!--			<version>3.0.1-om</version>-->
+<!--		</dependency>-->
 
 
 		<dependency>
