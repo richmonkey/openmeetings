@@ -86,7 +86,7 @@ public class GroupCallApp {
     threadPool(maxThreads);
 
     staticFiles.location("/static"); //index.html is served at localhost:4567 (default port)
-    webSocket("/groupcall", CallHandler.class);
+    webSocket("/wb", CallHandler.class);
 
     get("/whiteboards", (request, response) -> {
       String room = request.queryParams("room");
