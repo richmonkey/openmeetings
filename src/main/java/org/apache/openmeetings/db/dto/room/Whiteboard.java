@@ -46,6 +46,7 @@ public class Whiteboard implements Serializable {
 	private Date created = new Date();
 	private int slide = 0;
 	private String name;
+	private String backgroundImageURL = "";
 
 	public Whiteboard() {}
 
@@ -84,6 +85,11 @@ public class Whiteboard implements Serializable {
 
 	public void setZoomMode(ZoomMode zoomMode) {
 		this.zoomMode = zoomMode;
+	}
+
+	public String getBackgroundImageURL() {return backgroundImageURL;}
+	public void setBackgroundImageURL(String url) {
+		backgroundImageURL = url;
 	}
 
 	public void clear() {

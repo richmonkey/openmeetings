@@ -324,7 +324,23 @@ public class CallHandler {
         switch (a) {
             case createWb:
             {
+                int width = obj.optInt("width", -1);
+                int height = obj.optInt("height", -1);
+                String background = obj.optString("background");
+                String name = obj.optString("name");
                 Whiteboard wb = WhiteboardCache.add(roomId, langId);
+                if (width != -1) {
+                    wb.setWidth(width);
+                }
+                if (height != -1) {
+                    wb.setHeight(height);
+                }
+                if (background != null) {
+                    wb.setBackgroundImageURL(background);
+                }
+                if (name != null) {
+                    wb.setName(name);
+                }
                 sendWbAll(user, WbAction.createWb, getAddWbJson(wb));
             }
             break;
@@ -531,10 +547,8 @@ public class CallHandler {
                 .put("width", wb.getWidth())
                 .put("height", wb.getHeight())
                 .put("zoom", wb.getZoom())
-                .put("zoomMode", wb.getZoomMode());
+                .put("zoomMode", wb.getZoomMode())
+                .put("background", wb.getBackgroundImageURL());
     }
-
-
-
 
 }
