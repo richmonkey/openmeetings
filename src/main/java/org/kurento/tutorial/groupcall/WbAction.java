@@ -21,6 +21,7 @@ package org.kurento.tutorial.groupcall;
 public enum WbAction {
 	createWb
 	, removeWb
+	, resetWb
 	, activateWb
 	, setSlide
 	, createObj
@@ -32,6 +33,7 @@ public enum WbAction {
 	, load
 	, undo
 	, setSize
+	, setBackground
 	, downloadPdf
 	, startRecording
 	, stopRecording

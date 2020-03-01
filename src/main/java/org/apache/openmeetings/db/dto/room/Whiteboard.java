@@ -46,7 +46,7 @@ public class Whiteboard implements Serializable {
 	private Date created = new Date();
 	private int slide = 0;
 	private String name;
-	private String backgroundImageURL = "";
+	private String background = "";
 
 	public Whiteboard() {}
 
@@ -87,9 +87,9 @@ public class Whiteboard implements Serializable {
 		this.zoomMode = zoomMode;
 	}
 
-	public String getBackgroundImageURL() {return backgroundImageURL;}
-	public void setBackgroundImageURL(String url) {
-		backgroundImageURL = url;
+	public String getBackground() {return background;}
+	public void setBackground(String url) {
+		background = url;
 	}
 
 	public void clear() {
@@ -148,6 +148,14 @@ public class Whiteboard implements Serializable {
 		return items;
 	}
 
+	public JSONArray listItems() {
+		JSONArray items = new JSONArray();
+		for (Entry<String, String> e : roomItems.entrySet()) {
+			items.put(new JSONObject(e.getValue()));
+		}
+		return items;
+	}
+
 	public JSONObject remove(Object oid) {
 		return new JSONObject(roomItems.remove(oid));
 	}
@@ -188,19 +196,19 @@ public class Whiteboard implements Serializable {
 		this.height = height;
 	}
 
-	public JSONObject toJson() {
-		//deep-copy
-		JSONObject json = new JSONObject(new JSONObject(this).toString(new NullStringer()));
-		json.remove("id"); //filtering
-		if (!json.has(ITEMS_KEY)) {
-			json.put(ITEMS_KEY, new JSONObject());
-		}
-		JSONObject items = json.getJSONObject(ITEMS_KEY);
-		for (String uid : items.keySet()) {
-			JSONObject o = items.getJSONObject(uid);
-			o.remove("_src");
-			o.remove("src"); //filtering
-		}
-		return json;
-	}
+//	public JSONObject toJson() {
+//		//deep-copy
+//		JSONObject json = new JSONObject(new JSONObject(this).toString(new NullStringer()));
+//		json.remove("id"); //filtering
+//		if (!json.has(ITEMS_KEY)) {
+//			json.put(ITEMS_KEY, new JSONObject());
+//		}
+//		JSONObject items = json.getJSONObject(ITEMS_KEY);
+//		for (String uid : items.keySet()) {
+//			JSONObject o = items.getJSONObject(uid);
+//			o.remove("_src");
+//			o.remove("src"); //filtering
+//		}
+//		return json;
+//	}
 }

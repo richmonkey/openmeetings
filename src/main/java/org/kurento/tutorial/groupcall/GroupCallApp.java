@@ -97,8 +97,13 @@ public class GroupCallApp {
         return resp.toString();
       }
 
+      Room roomObj = roomManager.getRoom(room);
+      if (roomObj == null) {
+        JSONObject resp = new JSONObject();
+        return resp.toString();
+      }
 
-      Long roomId = Long.parseLong(room);
+      Long roomId = roomObj.getRoomID();
       long langId = 0;
 
       JSONArray array = new JSONArray();
@@ -135,7 +140,8 @@ public class GroupCallApp {
             .put("width", wb.getWidth())
             .put("height", wb.getHeight())
             .put("zoom", wb.getZoom())
-            .put("zoomMode", wb.getZoomMode());
+            .put("zoomMode", wb.getZoomMode())
+            .put("background", wb.getBackground());
   }
 
 

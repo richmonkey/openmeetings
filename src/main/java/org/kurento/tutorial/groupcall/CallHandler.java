@@ -135,6 +135,7 @@ public class CallHandler {
                     break;
                 case "createWb":
                 case "removeWb":
+                case "resetWb":
                 case "activateWb":
                 case "setSlide":
                 case "createObj":
@@ -146,6 +147,7 @@ public class CallHandler {
                 case "load":
                 case "undo":
                 case "setSize":
+                case "setBackground":
                 case "downloadPdf":
                 case "startRecording":
                 case "stopRecording":
@@ -233,7 +235,6 @@ public class CallHandler {
         final Room room = roomManager.getRoom(user.getRoomName());
         room.sendWbAll(a, obj);
     }
-
 
     private void addUndo(UserSession user, Long wbId, UndoObject u) {
         if (wbId == null) {
@@ -336,7 +337,7 @@ public class CallHandler {
                     wb.setHeight(height);
                 }
                 if (background != null) {
-                    wb.setBackgroundImageURL(background);
+                    wb.setBackground(background);
                 }
                 if (name != null) {
                     wb.setName(name);
@@ -352,13 +353,23 @@ public class CallHandler {
                 sendWbAll(user, WbAction.removeWb, obj);
             }
             break;
+            case resetWb:
+            {
+                long _id = obj.optLong("wbId", -1);
+                Long wbId = _id < 0 ? null : _id;
+                Whiteboard wb = WhiteboardCache.get(roomId).get(wbId);
+                if (wb == null) {
+                    return;
+                }
+                WhiteboardCache.clear(roomId, wbId);
+                sendWbAll(user, WbAction.clearAll, new JSONObject().put("wbId", wbId));
+            }
+            break;
             case activateWb:
             {
                 long _id = obj.optLong("wbId", -1);
-                if (_id > -1) {
-                    WhiteboardCache.activate(roomId, _id);
-                    sendWbAll(user, WbAction.activateWb, obj);
-                }
+                WhiteboardCache.activate(roomId, _id);
+                sendWbAll(user, WbAction.activateWb, obj);
             }
             break;
             case setSlide:
@@ -384,11 +395,14 @@ public class CallHandler {
                 //TODO scroll????
             }
             break;
-            default:
-                break;
-        }
-
-        switch (a) {
+            case setBackground:
+            {
+                Whiteboard wb = WhiteboardCache.get(roomId).get(obj.getLong("wbId"));
+                wb.setBackground(obj.getString("background"));
+                WhiteboardCache.update(roomId, wb);
+                sendWbOthers(user, WbAction.setBackground, obj);
+            }
+            break;
             case createObj:
             {
                 Whiteboard wb = WhiteboardCache.get(roomId).get(obj.getLong("wbId"));
@@ -513,7 +527,6 @@ public class CallHandler {
             default:
                 break;
         }
-
     }
 
     private static JSONArray getArray(JSONObject wb) {
@@ -531,13 +544,13 @@ public class CallHandler {
         if (wb == null) {
             return;
         }
-        JSONArray arr = getArray(wb.toJson());
+
+        JSONArray arr = wb.listItems();
         if (arr.length() != 0) {
             addUndo(user, wb.getId(), new UndoObject(UndoObject.Type.remove, arr));
         }
-        wb = WhiteboardCache.clear(roomId, wbId);
+        WhiteboardCache.clear(roomId, wbId);
         sendWbAll(user, WbAction.clearAll, new JSONObject().put("wbId", wbId));
-        sendWbAll(user, WbAction.setSize, getAddWbJson(wb));
     }
 
 
@@ -548,7 +561,7 @@ public class CallHandler {
                 .put("height", wb.getHeight())
                 .put("zoom", wb.getZoom())
                 .put("zoomMode", wb.getZoomMode())
-                .put("background", wb.getBackgroundImageURL());
+                .put("background", wb.getBackground());
     }
 
 }

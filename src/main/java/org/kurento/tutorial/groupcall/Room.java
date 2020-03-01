@@ -49,19 +49,21 @@ public class Room implements Closeable {
       public final ConcurrentHashMap<Long, Deque<UndoObject>> undoList = new ConcurrentHashMap<>();
 
       private final String name;
+      private final long id;
 
       public String getName() {
         return name;
       }
 
-      public Room(String roomName) {
+      public Room(String roomName, long roomId) {
         this.name = roomName;
+        this.id = roomId;
         log.info("ROOM {} has been created", roomName);
       }
 
 
     public long getRoomID() {
-      return Long.parseLong(name);
+      return id;
     }
 
     public synchronized void addUndo(Long wbId, UndoObject u) {
@@ -177,7 +179,12 @@ public class Room implements Closeable {
 
         final JSONObject newParticipantMsg = new JSONObject();
         newParticipantMsg.put("id", "wb");
-        newParticipantMsg.put("func", func);
+        if (obj.has("wbId")) {
+            newParticipantMsg.put("wbId", obj.getString("wbId"));
+        }
+        newParticipantMsg.put("cmd", a.name());
+        newParticipantMsg.put("params", obj);
+
         String s = newParticipantMsg.toString();
 
         for (final UserSession participant : participants.values()) {
@@ -196,8 +203,13 @@ public class Room implements Closeable {
 
         final JSONObject newParticipantMsg = new JSONObject();
         newParticipantMsg.put("id", "wb");
-        newParticipantMsg.put("func", func);
-        String s = newParticipantMsg.toString();
+        if(obj.has("wbId")) {
+            newParticipantMsg.put("wbId", obj.getString("wbId"));
+        }
+        newParticipantMsg.put("cmd", a.name());
+        newParticipantMsg.put("params", obj);
+
+        String s = newParticipantMsg.toString(new NullStringer());
 
         for (final UserSession participant : participants.values()) {
             try {
