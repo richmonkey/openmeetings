@@ -385,6 +385,7 @@
 				<excludes>
 					<exclude>log4j.properties</exclude>
 					<exclude>simplelogger.properties</exclude>
+					<exclude>whiteboard/**</exclude>
 				</excludes>
 			</resource>
 		</resources>
