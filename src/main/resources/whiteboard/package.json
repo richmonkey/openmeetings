@@ -1,0 +1,36 @@
+{
+    "name": "bauhinia",
+    "version": "1.1.0",
+    "main": "classroom.js",
+    "description": "bauhinia",
+    "productName": "羊蹄甲",
+    "license": "UNLICENSED",
+    "scripts": {
+        "build": "webpack --mode production && inline-source --compress false --root ./ index.html ../static/wb.bundle.html",
+        "watch": "webpack --watch --info-verbosity verbose --mode development",
+        "inlineHtml": "inline-source --compress false --root ./ index.html ../static/wb.bundle.html"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.7.4",
+        "@babel/preset-env": "^7.7.4",
+        "@babel/preset-react": "^7.7.4",
+        "babel-cli": "^6.26.0",
+        "babel-loader": "^8.0.4",
+        "babelify": "^7.3.0",
+        "css-loader": "^2.1.1",
+        "less": "^3.10.3",
+        "less-loader": "^5.0.0",
+        "source-map-loader": "^0.2.4",
+        "style-loader": "^0.23.1",
+        "ts-loader": "^6.2.1",
+        "typescript": "^3.7.3",
+        "inline-source-cli": "^2.0.0",        
+        "webpack": "~4.41.3",
+        "webpack-cli": "~3.3.10"
+    },
+    "dependencies": {
+        "event-emitter": "^0.3.5",
+        "react": "^16.9.16",
+        "react-dom": "^16.9.4"
+    }
+}
