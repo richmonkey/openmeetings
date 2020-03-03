@@ -20,15 +20,22 @@ class Room extends React.Component {
 
     componentDidMount() {
         console.log("Room did mount:" + this.props.id);
-        if (window.nativeApp) {
-            var s = window.nativeApp.loadWb(this.props.id);
-            var json = JSON.parse(s);
-            this.load(json);
-        }
     }
 
     componentWillUnmount() {
  
+    }
+
+    loadWb() {
+        if (window.nativeApp) {
+            //android sync load wb
+            var s = window.nativeApp.loadWb(this.props.id);
+            var json = JSON.parse(s);
+            this.load(json);
+        } else if (window.webkit && window.webkit.messageHandlers) {
+             //ios async load wb
+            window.webkit.messageHandlers.loadWb.postMessage(this.props.id);
+        }
     }
 
     load(json) {
@@ -126,11 +133,26 @@ window.whiteboardOptions = getWhiteboardOptions();
 
 var room;
 
+
 ReactDOM.render(
     <Room id={whiteboardOptions.id} ref={a => room=a} name={whiteboardOptions.name}
            width={whiteboardOptions.width} height={whiteboardOptions.height} 
            background={whiteboardOptions.background} />,
-    document.getElementById('root')
+    document.getElementById('root'), 
+    function() {
+        room.loadWb();
+    }
 );
+
+if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.logger) {
+    window.console.log = function(message){
+        var m = "";
+        for (var i = 0; i < arguments.length; i++) {
+            m += " " + arguments[i];
+        }
+        window.webkit.messageHandlers['logger'].postMessage(m)
+    };
+}
+
 
 window.WbArea = room;
