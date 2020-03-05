@@ -47,6 +47,7 @@ public class Whiteboard implements Serializable {
 	private int slide = 0;
 	private String name;
 	private String background = "";
+	private ArrayList<String> slides;
 
 	public Whiteboard() {}
 
@@ -87,10 +88,14 @@ public class Whiteboard implements Serializable {
 		this.zoomMode = zoomMode;
 	}
 
-	public String getBackground() {return background;}
-	public void setBackground(String url) {
-		background = url;
+
+	public void setSlides(ArrayList<String> urls) {
+		this.slides = urls;
 	}
+	public ArrayList<String> getSlides() {
+		return this.slides;
+	}
+
 
 	public void clear() {
 		roomItems.clear();

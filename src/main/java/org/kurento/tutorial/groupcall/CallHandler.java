@@ -23,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.github.openjson.JSONArray;
@@ -327,8 +329,11 @@ public class CallHandler {
             {
                 int width = obj.optInt("width", -1);
                 int height = obj.optInt("height", -1);
-                String background = obj.optString("background");
+                String background = obj.optString("background", null);
+                JSONArray slideArray = obj.optJSONArray("slides");
                 String name = obj.optString("name");
+
+
                 Whiteboard wb = WhiteboardCache.add(roomId, langId);
                 if (width != -1) {
                     wb.setWidth(width);
@@ -337,7 +342,17 @@ public class CallHandler {
                     wb.setHeight(height);
                 }
                 if (background != null) {
-                    wb.setBackground(background);
+                    ArrayList<String> urls = new ArrayList();
+                    urls.add(background);
+                    wb.setSlides(urls);
+                } else if (slideArray != null && slideArray.length() > 0) {
+                    ArrayList<String> urls = new ArrayList<>();
+                    if (slideArray != null) {
+                        for (int i = 0; i < slideArray.length(); i++) {
+                            urls.add(slideArray.getString(i));
+                        }
+                    }
+                    wb.setSlides(urls);
                 }
                 if (name != null) {
                     wb.setName(name);
@@ -395,22 +410,18 @@ public class CallHandler {
                 //TODO scroll????
             }
             break;
-            case setBackground:
-            {
-                Whiteboard wb = WhiteboardCache.get(roomId).get(obj.getLong("wbId"));
-                wb.setBackground(obj.getString("background"));
-                WhiteboardCache.update(roomId, wb);
-                sendWbOthers(user, WbAction.setBackground, obj);
-            }
-            break;
             case createObj:
             {
                 Whiteboard wb = WhiteboardCache.get(roomId).get(obj.getLong("wbId"));
                 JSONObject o = obj.getJSONObject("obj");
-                wb.put(o.getString("uid"), o);
-                WhiteboardCache.update(roomId, wb);
-                addUndo(user, wb.getId(), new UndoObject(UndoObject.Type.add, o));
-                sendWbOthers(user, WbAction.createObj, obj);
+                if (wb != null) {
+                    wb.put(o.getString("uid"), o);
+                    WhiteboardCache.update(roomId, wb);
+                    addUndo(user, wb.getId(), new UndoObject(UndoObject.Type.add, o));
+                    sendWbOthers(user, WbAction.createObj, obj);
+                } else {
+                    log.warn("whiteboard:{} nonexist", obj.getLong("wbId"));
+                }
             }
             break;
             case modifyObj:
@@ -555,13 +566,18 @@ public class CallHandler {
 
 
     private static JSONObject getAddWbJson(final Whiteboard wb) {
-        return new JSONObject().put("wbId", wb.getId())
+        JSONObject obj =  new JSONObject().put("wbId", wb.getId())
                 .put("name", wb.getName())
                 .put("width", wb.getWidth())
                 .put("height", wb.getHeight())
                 .put("zoom", wb.getZoom())
                 .put("zoomMode", wb.getZoomMode())
-                .put("background", wb.getBackground());
+                .put("slide", wb.getSlide());
+
+        if (wb.getSlides() != null) {
+            obj.put("slides", wb.getSlides());
+        }
+        return obj;
     }
 
 }

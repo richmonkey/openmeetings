@@ -86,7 +86,8 @@ export class WhiteBoard extends React.Component {
 
 		console.log("wb props:", this.props);
 		this.canvasId = "canvas-" + this.props.id;
-        this.slide = 0;
+		this.slide = 0;
+		this.slides = [{}];
 
 		this.handleWindowResize = this.handleWindowResize.bind(this);
 
@@ -111,6 +112,7 @@ export class WhiteBoard extends React.Component {
         canvas.wbId = this.props.id;
         canvas.slide = this.slide;
 		canvas.selection = false;
+		canvas.backgroundColor = "white";
 		
 		if (this.props.backgroundImage) {
    		    canvas.setBackgroundImage(this.props.backgroundImage, 
@@ -156,12 +158,53 @@ export class WhiteBoard extends React.Component {
     }
 
     load(obj) {
-        console.log("obj:", obj.wbId, obj.name, obj.width, obj.height, obj.zoom, obj.zoomMode, obj.obj);
+		console.log("obj:", obj.wbId, obj.name, obj.width, obj.height, 
+					obj.zoom, obj.zoomMode, obj.slide, obj.slides, obj.obj);
+
+		//initialize
+		this.slide = obj.slide;
+		if (obj.slides) {
+			this.slides = obj.slides.map((url) => {
+				return {background:url};
+			})
+		} else {
+			this.slides = [{}];
+		}
+
+		var slide = this.slides[this.slide];
+		
+		var backgroundImage = slide.background;
+		if (backgroundImage) {
+			this.fabric.setBackgroundImage(backgroundImage, 
+					() => {
+						this.fabric.renderAll();
+					}, 
+					{
+						width:this.props.width, 
+						height:this.props.height, 
+						originX: 'left',
+						originY: 'top'
+					});
+		}
+
 
         this._setSize(obj.width, obj.height);
 
         if (obj.obj && obj.obj.length > 0) {
-            this.createObj(obj.obj);
+			for (let i = 0; i < obj.obj.length; i++) {
+				var elem = obj.obj[i];
+				if (elem.slide == this.slide) {
+					this.createObj(obj.obj);
+				} else if (elem.slide >= 0 && elem.slide < this.slides.length) {
+					//其他页的对象暂时保存
+					let s = this.slides[elem.slide];
+					if (!s.obj) {
+						s.obj = [];
+					}
+					s.obj.push(elem);
+				}
+			}
+  
         }
     }
     
@@ -170,6 +213,10 @@ export class WhiteBoard extends React.Component {
     }
 
     clearSlide(_sl) {
+		if (_sl != this.slide) {
+			//只能清除当前页
+			return;
+		}
         let canvas = this.fabric;
         canvas.renderOnAddRemove = false;
         let arr = canvas.getObjects();
@@ -179,7 +226,48 @@ export class WhiteBoard extends React.Component {
         }
         canvas.renderOnAddRemove = true;
         canvas.renderAll();
-    }
+	}
+	
+	setSlide(_sl) {
+		if (this.slide == _sl) {
+			return;
+		}
+
+		if (_sl < 0 || _sl >= this.slides.length) {
+			return;
+		}
+
+		var slide = this.slides[this.slide];
+		slide.json = JSON.stringify(this.fabric);
+
+		this.slide = _sl;
+		slide = this.slides[this.slide];
+		var backgroundImage = slide.background;
+		var canvas = this.fabric;
+		canvas.slide = this.slide;
+		canvas.clear();
+		canvas.setBackgroundImage(backgroundImage, 
+			function() {
+				canvas.renderAll();
+			}, 
+			{
+				width:this.props.width, 
+				height:this.props.height, 
+				originX: 'left',
+				originY: 'top'
+			});
+
+		if (slide.obj && slide.obj.length > 0) {
+			this.createObj(slide.obj);
+			delete(slide.obj);
+		} else if (slide.json) {
+			canvas.loadFromJSON(slide.json, () => {
+				this.fabric.renderAll();
+			});
+		}
+
+	}
+
     createObj(obj) {
 		let arr = [], _arr = Array.isArray(obj) ? obj : [obj];
 		for (let i = 0; i < _arr.length; ++i) {

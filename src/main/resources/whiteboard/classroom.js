@@ -38,6 +38,7 @@ class Room extends React.Component {
         }
     }
 
+    //called by ios
     load(json) {
         if (json.wbId != this.props.id) {
             console.log("invalid wb id:", json.wbId, " ", this.props.id);
@@ -47,6 +48,15 @@ class Room extends React.Component {
         this.whiteboard.load(json);
     }
 
+    //functions from server
+
+    setSlide(json) {
+        if (json.wbId != this.props.id) {
+            console.log("invalid wb id:", json.wbId, " ", this.props.id);
+            return;
+        }
+        this.whiteboard.setSlide(json.slide);
+    }
     createObj(json) {
         if (json.wbId != this.props.id) {
             console.log("invalid wb id:", json.wbId, " ", this.props.id);

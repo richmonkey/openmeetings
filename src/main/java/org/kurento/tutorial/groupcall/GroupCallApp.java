@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
@@ -135,13 +136,18 @@ public class GroupCallApp {
   }
 
   private static JSONObject getAddWbJson(final Whiteboard wb) {
-    return new JSONObject().put("wbId", wb.getId())
+    JSONObject obj =  new JSONObject().put("wbId", wb.getId())
             .put("name", wb.getName())
             .put("width", wb.getWidth())
             .put("height", wb.getHeight())
             .put("zoom", wb.getZoom())
             .put("zoomMode", wb.getZoomMode())
-            .put("background", wb.getBackground());
+            .put("slide", wb.getSlide());
+
+    if (wb.getSlides() != null) {
+      obj.put("slides", wb.getSlides());
+    }
+    return obj;
   }
 
 
