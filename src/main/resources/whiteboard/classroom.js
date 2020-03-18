@@ -73,6 +73,14 @@ class Room extends React.Component {
         this.whiteboard.clearAll();
     }
 
+    clearSlide(json) {
+        if (json.wbId != this.props.id) {
+            console.log("invalid wb id:", json.wbId, " ", this.props.id);
+            return;
+        }
+        this.whiteboard.clearSlide(json.slide);
+    }
+
     deleteObj(json) {
         if (json.wbId != this.props.id) {
             console.log("invalid wb id:", json.wbId, " ", this.props.id);
