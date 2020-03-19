@@ -91,6 +91,10 @@ public class Room implements Closeable {
     this.close();
   }
 
+  public UserSession find(String userName) {
+    return this.participants.get(userName);
+  }
+
   public UserSession join(String userName, Session session) throws IOException {
     log.info("ROOM {}: adding participant {}", userName, userName);
     final UserSession participant = new UserSession(userName, this.name, session);

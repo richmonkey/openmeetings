@@ -45,6 +45,7 @@ public class UserSession implements Closeable {
 
   private final String roomName;
 
+  private boolean closed = false;
 
   public UserSession(final String name, final String roomName, final Session session) {
 
@@ -66,6 +67,7 @@ public class UserSession implements Closeable {
     return session;
   }
 
+  public boolean getClosed() {return closed;}
   /**
    * The room to which the user is currently attending.
    *
@@ -83,16 +85,15 @@ public class UserSession implements Closeable {
   @Override
   public void close() throws IOException {
     log.debug("PARTICIPANT {}: Releasing resources", this.name);
-
+    closed = true;
   }
 
   public void sendMessage(JsonObject message) throws IOException {
     log.debug("USER {}: Sending message {}", name, message);
     synchronized (session) {
       session.getRemote().sendString(message.toString());
-          }
+    }
   }
-
 
   public void sendMessage(String message) throws IOException {
     log.debug("USER {}: Sending message {}", name, message);

@@ -58,7 +58,7 @@ import javax.imageio.ImageIO;
 import static org.apache.openmeetings.db.dto.room.Whiteboard.ITEMS_KEY;
 
 
-@WebSocket
+@WebSocket(maxIdleTime = 30000)
 public class CallHandler {
 
   private static final Logger log = LoggerFactory.getLogger(CallHandler.class);
@@ -79,7 +79,7 @@ public class CallHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        log.info("connection established:", user.getRemoteAddress());
+        log.info("connection established:{}", user.getRemoteAddress());
 
         authPass = GroupCallApp.authPass;
         redisHost = GroupCallApp.redisHost;
@@ -95,7 +95,7 @@ public class CallHandler {
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
-        log.info("connection closed:", statusCode, reason);
+        log.info("connection closed:{}, {}", statusCode, reason);
         try {
             if (registry.getBySession(session) != null) {
                 UserSession user = registry.removeBySession(session);
@@ -114,7 +114,6 @@ public class CallHandler {
     public void handleTextMessage(Session session, String message) {
         log.info("handle text message...:" + message);
 
-
         try {
             final JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
             final UserSession user = registry.getBySession(session);
@@ -123,6 +122,11 @@ public class CallHandler {
                 log.debug("Incoming message from user '{}': {}", user.getName(), jsonMessage);
             } else {
                 log.debug("Incoming message from new user: {}", jsonMessage);
+            }
+
+            if (user == null && !jsonMessage.get("id").getAsString().equals("joinRoom")) {
+                log.info("user join room fail, can't handle any message");
+                return;
             }
 
             String id = jsonMessage.get("id").getAsString();
@@ -134,6 +138,9 @@ public class CallHandler {
                     leaveRoom(user);
                     break;
                 case "ping":
+                    final JsonObject json = new JsonObject();
+                    json.addProperty("id", "pong");
+                    user.sendMessage(json);
                     break;
                 case "createWb":
                 case "removeWb":
@@ -211,21 +218,35 @@ public class CallHandler {
       }
       String token = params.get("token").getAsString();
       if (!auth(token, name)) {
+        joinError(1, "认证失败", session);
         return;
       }
     }
 
     Room room = roomManager.getRoom(roomName);
+    UserSession oldUserSession = room.find(name);
+
+    if (oldUserSession != null) {
+      log.warn("room {} user {} can't connected from multiple client, remove old user session", roomName, name);
+      room.leave(oldUserSession);
+      registry.removeBySession(oldUserSession.getSession());
+      if (oldUserSession.getSession().isOpen()) {
+          oldUserSession.getSession().close();
+      }
+    }
+
     final UserSession user = room.join(name, session);
     registry.register(user);
   }
 
   private void leaveRoom(UserSession user) throws IOException {
-    final Room room = roomManager.getRoom(user.getRoomName());
-    room.leave(user);
-    if (room.getParticipants().isEmpty()) {
-      roomManager.removeRoom(room);
-    }
+        if (!user.getClosed()) {
+          final Room room = roomManager.getRoom(user.getRoomName());
+          room.leave(user);
+          if (room.getParticipants().isEmpty()) {
+              roomManager.removeRoom(room);
+          }
+      }
   }
 
     private void sendWbOthers(UserSession user, WbAction a, JSONObject obj) {
@@ -579,5 +600,19 @@ public class CallHandler {
         }
         return obj;
     }
+
+    private void joinError(int errorCode, String error, Session session) throws IOException {
+        final JsonObject err = new JsonObject();
+        err.addProperty("id", "joinError");
+        err.addProperty("error", error);
+        err.addProperty("code", errorCode);
+        sendMessage(err, session);
+    }
+
+
+    private void sendMessage(JsonObject message, Session session) throws IOException {
+        session.getRemote().sendString(message.toString());
+    }
+
 
 }
