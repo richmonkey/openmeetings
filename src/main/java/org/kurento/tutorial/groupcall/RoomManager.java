@@ -37,6 +37,8 @@ public class RoomManager {
 
   private volatile AtomicLong roomId = new AtomicLong(0);
 
+  private final ConcurrentMap<String, Long> roomIDMap = new ConcurrentHashMap<>();
+
   private final ConcurrentMap<String, Room> rooms = new ConcurrentHashMap<>();
 
   /**
@@ -52,7 +54,14 @@ public class RoomManager {
     Room room = rooms.get(roomName);
     if (room == null) {
       log.debug("Room {} not existent. Will create now!", roomName);
-      room = new Room(roomName, roomId.getAndIncrement());
+      long newRoomId;
+      if (roomIDMap.containsKey(roomName)) {
+        newRoomId = roomIDMap.get(roomName);
+      } else {
+        newRoomId = roomId.getAndIncrement();
+        roomIDMap.put(roomName, newRoomId);
+      }
+      room = new Room(roomName, newRoomId);
       rooms.put(roomName, room);
     }
     log.debug("Room {} found!", roomName);

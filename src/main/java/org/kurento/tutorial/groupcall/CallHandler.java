@@ -209,6 +209,11 @@ public class CallHandler {
   private void joinRoom(JsonObject params, Session session) throws IOException {
     final String roomName = params.get("room").getAsString();
     final String name = params.get("name").getAsString();
+    String sessionId = null;
+    if (params.has("session_id")) {
+      sessionId = params.get("session_id").getAsString();
+    }
+
     log.info("PARTICIPANT {}: trying to join room {}", name, roomName);
 
     if (!authPass) {
@@ -227,6 +232,12 @@ public class CallHandler {
     UserSession oldUserSession = room.find(name);
 
     if (oldUserSession != null) {
+      if (sessionId == null || !sessionId.equals(oldUserSession.getId())) {
+        log.warn("room {} user {} can't connected from multiple client", roomName, name);
+        joinError(3, "重复登录", session);
+        return;
+      }
+
       log.warn("room {} user {} can't connected from multiple client, remove old user session", roomName, name);
       room.leave(oldUserSession);
       registry.removeBySession(oldUserSession.getSession());
@@ -235,7 +246,7 @@ public class CallHandler {
       }
     }
 
-    final UserSession user = room.join(name, session);
+    final UserSession user = room.join(name, session, sessionId);
     registry.register(user);
   }
 

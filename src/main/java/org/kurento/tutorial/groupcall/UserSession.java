@@ -41,19 +41,18 @@ public class UserSession implements Closeable {
 
   private final String name;
   private final Session session;
-
+  private final String id;
 
   private final String roomName;
 
   private boolean closed = false;
 
-  public UserSession(final String name, final String roomName, final Session session) {
-
+  public UserSession(final String name, final String roomName, final Session session, String sessionId) {
     this.name = name;
     this.session = session;
+    this.id = sessionId;
     this.roomName = roomName;
   }
-
 
   public String getName() {
     return name;
@@ -67,6 +66,9 @@ public class UserSession implements Closeable {
     return session;
   }
 
+  public String getId() {
+    return id;
+  }
   public boolean getClosed() {return closed;}
   /**
    * The room to which the user is currently attending.

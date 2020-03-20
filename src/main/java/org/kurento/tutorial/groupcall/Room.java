@@ -95,9 +95,9 @@ public class Room implements Closeable {
     return this.participants.get(userName);
   }
 
-  public UserSession join(String userName, Session session) throws IOException {
+  public UserSession join(String userName, Session session, String sessionId) throws IOException {
     log.info("ROOM {}: adding participant {}", userName, userName);
-    final UserSession participant = new UserSession(userName, this.name, session);
+    final UserSession participant = new UserSession(userName, this.name, session, sessionId);
     joinRoom(participant);
     participants.put(participant.getName(), participant);
     sendParticipantNames(participant);
@@ -245,13 +245,8 @@ public class Room implements Closeable {
     }
 
     participants.clear();
-
-
-
     log.debug("Room {} closed", this.name);
   }
-
-
 
     private static final int UNDO_SIZE = 20;
     private static class LimitedLinkedList<T> extends LinkedList<T> {
