@@ -44,7 +44,7 @@ class Room extends React.Component {
             console.log("invalid wb id:", json.wbId, " ", this.props.id);
             return;
         }
-        console.log("load whiteboard:", json);
+        console.log("load whiteboard:", json.wbId, json.slide);
         this.whiteboard.load(json);
     }
 

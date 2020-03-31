@@ -113,22 +113,7 @@ export class WhiteBoard extends React.Component {
         canvas.slide = this.slide;
 		canvas.selection = false;
 		canvas.backgroundColor = "white";
-		
-		if (this.props.backgroundImage) {
-   		    canvas.setBackgroundImage(this.props.backgroundImage, 
-					function() {
-						canvas.renderAll();
-					}, 
-					{
-						width:this.props.width, 
-						height:this.props.height, 
-						originX: 'left',
-						originY: 'top'
-					});
-		}
-
 		this.fabric = canvas;
-
 		this._setSize(this.props.width, this.props.height);
 		window.addEventListener('resize', this.handleWindowResize)
 	}
@@ -139,13 +124,7 @@ export class WhiteBoard extends React.Component {
     }
 
     toJSON() {
-        return JSON.stringify(this.fabric);
-    }
-
-    loadJSON(json) {
-        this.fabric.loadFromJSON(json, () => {
-            this.fabric.renderAll();
-        });
+		return this.toOmJson(this.fabric);
     }
 
     getSize() {
@@ -172,21 +151,7 @@ export class WhiteBoard extends React.Component {
 		}
 
 		var slide = this.slides[this.slide];
-		
-		var backgroundImage = slide.background;
-		if (backgroundImage) {
-			this.fabric.setBackgroundImage(backgroundImage, 
-					() => {
-						this.fabric.renderAll();
-					}, 
-					{
-						width:this.props.width, 
-						height:this.props.height, 
-						originX: 'left',
-						originY: 'top'
-					});
-		}
-
+		this.setBackground(slide);
 
         this._setSize(obj.width, obj.height);
 
@@ -194,7 +159,7 @@ export class WhiteBoard extends React.Component {
 			for (let i = 0; i < obj.obj.length; i++) {
 				var elem = obj.obj[i];
 				if (elem.slide == this.slide) {
-					this.createObj(obj.obj);
+					this.createObj(elem);
 				} else if (elem.slide >= 0 && elem.slide < this.slides.length) {
 					//其他页的对象暂时保存
 					let s = this.slides[elem.slide];
@@ -204,7 +169,6 @@ export class WhiteBoard extends React.Component {
 					s.obj.push(elem);
 				}
 			}
-  
         }
     }
     
@@ -237,35 +201,28 @@ export class WhiteBoard extends React.Component {
 			return;
 		}
 
+		console.log("set slide:", _sl);
 		var slide = this.slides[this.slide];
-		slide.json = JSON.stringify(this.fabric);
+		slide.json = this.toOmJson(this.fabric);
 
 		this.slide = _sl;
 		slide = this.slides[this.slide];
-		var backgroundImage = slide.background;
 		var canvas = this.fabric;
 		canvas.slide = this.slide;
 		canvas.clear();
-		canvas.setBackgroundImage(backgroundImage, 
-			function() {
-				canvas.renderAll();
-			}, 
-			{
-				width:this.props.width, 
-				height:this.props.height, 
-				originX: 'left',
-				originY: 'top'
-			});
 
 		if (slide.obj && slide.obj.length > 0) {
 			this.createObj(slide.obj);
 			delete(slide.obj);
+			this.setBackground(slide);
 		} else if (slide.json) {
 			canvas.loadFromJSON(slide.json, () => {
 				this.fabric.renderAll();
+				this.setBackground(slide);
 			});
+		} else {
+			this.setBackground(slide);
 		}
-
 	}
 
     createObj(obj) {
@@ -311,7 +268,43 @@ export class WhiteBoard extends React.Component {
 		if (arr.length > 0) {
 			this._createObject(arr, this._modifyHandler);
 		}
-    }
+	}
+	
+	setBackground(slide) {
+		if (slide.backgroundImage) {
+			this.fabric.setBackgroundImage(slide.backgroundImage, 
+				() => {
+					this.fabric.renderAll();
+				}, 
+				{
+					width:this.props.width, 
+					height:this.props.height, 
+					originX: 'left',
+					originY: 'top'
+				});
+		} else if (slide.background) {
+			fabric.Image.fromURL(slide.background, (img) => {
+				if (!img) {
+					console.log("load background url failure:", slide.background);
+					return;
+				}
+				slide.backgroundImage = img;
+				this.fabric.setBackgroundImage(slide.backgroundImage, 
+					() => {
+						this.fabric.renderAll();
+					}, 
+					{
+						width:this.props.width, 
+						height:this.props.height, 
+						originX: 'left',
+						originY: 'top'
+					});
+
+			});
+		} else {
+			this.fabric.backgroundImage = undefined;
+		}
+	}
     
     _findObject(o) {
 		var _o = null;
