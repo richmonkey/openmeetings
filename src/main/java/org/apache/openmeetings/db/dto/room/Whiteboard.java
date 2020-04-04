@@ -46,8 +46,8 @@ public class Whiteboard implements Serializable {
 	private Date created = new Date();
 	private int slide = 0;
 	private String name;
-	private String background = "";
 	private ArrayList<String> slides;
+	private HashMap<String, String> properties;//额外属性
 
 	public Whiteboard() {}
 
@@ -96,6 +96,13 @@ public class Whiteboard implements Serializable {
 		return this.slides;
 	}
 
+	public void setProperties(HashMap<String, String> properties) {
+		this.properties = properties;
+	}
+
+	public HashMap<String, String> getProperties() {
+		return this.properties;
+	}
 
 	public void clear() {
 		roomItems.clear();

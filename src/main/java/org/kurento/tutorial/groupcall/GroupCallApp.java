@@ -87,6 +87,7 @@ public class GroupCallApp {
     threadPool(maxThreads);
 
     staticFiles.location("/static"); //index.html is served at localhost:4567 (default port)
+
     webSocket("/wb", CallHandler.class);
 
     get("/whiteboards", (request, response) -> {
@@ -113,7 +114,7 @@ public class GroupCallApp {
         Whiteboard wb = entry.getValue();
         log.info("whiteboard id: {}", wb.getId());
 
-        JSONObject wbObj = getAddWbJson(wb);
+        JSONObject wbObj = CallHandler.getAddWbJson(wb);
         JSONArray arr = new JSONArray();
         for (JSONObject o : wb.list()) {
           arr.put(addFileUrl(o));
@@ -134,22 +135,6 @@ public class GroupCallApp {
     });
     init();
   }
-
-  private static JSONObject getAddWbJson(final Whiteboard wb) {
-    JSONObject obj =  new JSONObject().put("wbId", wb.getId())
-            .put("name", wb.getName())
-            .put("width", wb.getWidth())
-            .put("height", wb.getHeight())
-            .put("zoom", wb.getZoom())
-            .put("zoomMode", wb.getZoomMode())
-            .put("slide", wb.getSlide());
-
-    if (wb.getSlides() != null) {
-      obj.put("slides", wb.getSlides());
-    }
-    return obj;
-  }
-
 
   public static JSONObject addFileUrl(JSONObject _file) {
     final long fid = _file.optLong("fileId", -1);

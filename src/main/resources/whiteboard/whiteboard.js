@@ -78,6 +78,9 @@ var APointer = function() {
 	return pointer;
 }
 	
+const QUESTION_CHOICE = "choice";
+const QUESTION_JUDGEMENT = "judgement";
+
 export class WhiteBoard extends React.Component {
     constructor(props) {
         super(props);
@@ -94,7 +97,7 @@ export class WhiteBoard extends React.Component {
         this._modifyHandler = this._modifyHandler.bind(this);
 		this._createHandler = this._createHandler.bind(this);
 		
-        console.log("wbid:", this.props.id)
+        console.log("wbid:", this.props.id);
     }
 
     componentDidMount() {
@@ -112,7 +115,6 @@ export class WhiteBoard extends React.Component {
         canvas.wbId = this.props.id;
         canvas.slide = this.slide;
 		canvas.selection = false;
-		canvas.backgroundColor = "white";
 		this.fabric = canvas;
 		this._setSize(this.props.width, this.props.height);
 		window.addEventListener('resize', this.handleWindowResize)
@@ -137,12 +139,15 @@ export class WhiteBoard extends React.Component {
     }
 
     load(obj) {
-		console.log("obj:", obj.wbId, obj.name, obj.width, obj.height, 
-					obj.zoom, obj.zoomMode, obj.slide, obj.slides, obj.obj);
+		console.log("load obj:", JSON.stringify(obj));
 
 		//initialize
 		this.slide = obj.slide;
-		if (obj.slides) {
+		if (obj.exercise) {
+			this.slides = obj.exercise.questions.map(() => {
+				return {};
+			});
+		} else if (obj.slides) {
 			this.slides = obj.slides.map((url) => {
 				return {background:url};
 			})
@@ -150,17 +155,10 @@ export class WhiteBoard extends React.Component {
 			this.slides = [{}];
 		}
 
-		var slide = this.slides[this.slide];
-		this.setBackground(slide);
-
-        this._setSize(obj.width, obj.height);
-
-        if (obj.obj && obj.obj.length > 0) {
-			for (let i = 0; i < obj.obj.length; i++) {
-				var elem = obj.obj[i];
-				if (elem.slide == this.slide) {
-					this.createObj(elem);
-				} else if (elem.slide >= 0 && elem.slide < this.slides.length) {
+		if (obj.obj && obj.obj.length > 0) {
+			for (var i = 0; i < obj.obj.length; i++) {
+				let elem = obj.obj[i];
+				if (elem.slide >= 0 && elem.slide < this.slides.length) {
 					//其他页的对象暂时保存
 					let s = this.slides[elem.slide];
 					if (!s.obj) {
@@ -169,7 +167,21 @@ export class WhiteBoard extends React.Component {
 					s.obj.push(elem);
 				}
 			}
-        }
+		}
+
+		var slide = this.slides[this.slide];
+		if (slide.obj) {
+			this.createObj(slide.obj);
+			delete(slide.obj);
+			this.setBackground(slide);
+		} else {
+			this.setBackground(slide);
+		}
+
+		this._setSize(obj.width, obj.height);
+		if (obj.exercise) {
+			this.setState({exercise:obj.exercise});
+		}
     }
     
     clearAll() {
@@ -223,6 +235,11 @@ export class WhiteBoard extends React.Component {
 		} else {
 			this.setBackground(slide);
 		}
+
+		if (this.state.exercise) {
+			//render question
+			this.setState({});
+		}
 	}
 
     createObj(obj) {
@@ -272,34 +289,30 @@ export class WhiteBoard extends React.Component {
 	
 	setBackground(slide) {
 		if (slide.backgroundImage) {
-			this.fabric.setBackgroundImage(slide.backgroundImage, 
-				() => {
-					this.fabric.renderAll();
-				}, 
-				{
-					width:this.props.width, 
-					height:this.props.height, 
-					originX: 'left',
-					originY: 'top'
-				});
-		} else if (slide.background) {
-			fabric.Image.fromURL(slide.background, (img) => {
-				if (!img) {
-					console.log("load background url failure:", slide.background);
-					return;
-				}
-				slide.backgroundImage = img;
-				this.fabric.setBackgroundImage(slide.backgroundImage, 
+			this.setBackgroundPosition(this.props.width, this.props.height, slide.backgroundImage);
+			this.fabric.setBackgroundImage(slide.backgroundImage,
 					() => {
+						console.log("set background image success");
 						this.fabric.renderAll();
-					}, 
+					},
 					{
-						width:this.props.width, 
-						height:this.props.height, 
 						originX: 'left',
 						originY: 'top'
 					});
-
+		} else if (slide.background) {
+			fabric.Image.fromURL(slide.background, (img) => {
+				console.log("load background image success:", img.width, img.height);
+				slide.backgroundImage = img;
+				this.setBackgroundPosition(this.props.width, this.props.height, slide.backgroundImage);
+				this.fabric.setBackgroundImage(slide.backgroundImage,
+						() => {
+							console.log("set background image success");
+							this.fabric.renderAll();
+						},
+						{
+							originX: 'left',
+							originY: 'top'
+						});
 			});
 		} else {
 			this.fabric.backgroundImage = undefined;
@@ -364,26 +377,50 @@ export class WhiteBoard extends React.Component {
 			self.fabric.renderAll();
 		});
     };
-        
-	_setSize(width, height) {
-		//center in the document, fullFit margin:8
-		var windowWidth = document.body.clientWidth - 16;
-		var windowHeight = document.body.clientHeight - 16;
-		var zoom = Math.min(windowWidth/width, windowHeight/height);
-		var w = zoom*width;
-		var h = zoom*height;
-		this.fabric.setWidth(zoom * width).setHeight(zoom * height).setZoom(zoom);
-		if (this.fabric.backgroundImage) {
-			var backgroundImage = this.fabric.backgroundImage;
-			backgroundImage.setWidth(width);
-			backgroundImage.setHeight(height);
+		
+		
+	setBackgroundPosition(width, height, img) {
+		img = img || this.fabric.backgroundImage;
+		if (img) {
+			console.log("before set canvas background size:", img.width, img.height);
+			let scale = Math.min(width/img.width, height/img.height);
+			img.scaleToWidth(scale*img.width, true);
+			img.scaleToHeight(scale*img.height, true);
+			let x = (width - scale*img.width)/2;
+			let y = (height - scale*img.height)/2
+			let point = new fabric.Point(x, y);
+			img.setPositionByOrigin(point, "left", "top");
+			console.log("set canvas background size:", this.props.name, width, height, x, y, img.width, img.height, scale);
 		}
+	}
+	
+	_setSize(width, height) {
+		let w = this.area.clientWidth;
+		let h = this.area.clientHeight;
 
-		this.area.style.width = w;
-		this.area.style.height = h;
-		this.area.style.top = 8;
-		this.area.style.left = 8;
-    }
+        //fullFit
+        var zoom = Math.min(w/width, h/height);
+		this.fabric.setWidth(zoom * width).setHeight(zoom * height).setZoom(zoom);
+		this.setBackgroundPosition(width, height);
+
+		//居中
+		var x = (w - (zoom*width))/2;
+		var y = (h - (zoom*height))/2;
+
+
+		var canvasBackground = this.area.children[0];
+		canvasBackground.style.left = x;
+		canvasBackground.style.top = y;
+		canvasBackground.style.width = zoom*width;
+		canvasBackground.style.height = zoom*height;
+
+		var canvasContainer = this.area.children[1];
+		canvasContainer.style.left = x;
+		canvasContainer.style.top = y;
+
+		console.log("set canvas size:", this.props.name, width, height, x, y, zoom * width, zoom * height, zoom, this.area.clientWidth, this.area.clientHeight);
+	}
+
 
 	handleWindowResize(e) {
 		console.log("window resize event:", e);
@@ -403,9 +440,47 @@ export class WhiteBoard extends React.Component {
 		this.area.style.left = 8;
 	}
 
+	renderQuestion() {
+		if (!this.state.exercise) {
+			return null;
+		}
+
+		if (this.slide < 0 || this.slide > this.state.exercise.questions.length) {
+			console.log("invalid slide:", this.slide);
+			return null;
+		}
+		var question = this.state.exercise.questions[this.slide];
+		if (question.type == QUESTION_CHOICE) {
+			var options = question.options.map((opt, index) => {
+				var prefix = String.fromCodePoint('A'.codePointAt(0) + index);
+				return (<div key={prefix} className={styles["option"]}>{prefix + ":" + opt}</div>);
+			});
+			var answer = String.fromCodePoint('A'.codePointAt(0) + question.answer);
+			return (
+				<div className={styles["question"]}>
+					<div className={styles["ask"]}>{question.ask}</div>
+					{options}
+					<div className={styles["answer"]}>{"答案:" + answer}</div>
+				</div>
+			);
+		} else if (question.type == QUESTION_JUDGEMENT) {
+			var answer = question.answer ? "正确" : "错误";
+			return (
+				<div className={styles["question"]}>
+					<div className={styles["ask"]}>{question.ask}</div>
+					<div className={styles["answer"]}>{"答案:" + answer}</div>
+				</div>
+			);
+		}
+	}
+
+
     render() {
         return (
             <div className={styles["wb-area"]} ref={e => this.area=e}>
+				<div className={styles["wb-background"]}>
+					{this.renderQuestion()}
+				</div>
                 <canvas id={this.canvasId} className={styles["wb-canvas"]} ref={(e) => this.canvas = e} />
             </div>
         );

@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.github.openjson.JSONArray;
@@ -44,6 +45,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.common.util.TextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -364,7 +366,23 @@ public class CallHandler {
                 String background = obj.optString("background", null);
                 JSONArray slideArray = obj.optJSONArray("slides");
                 String name = obj.optString("name");
+                JSONObject properties = obj.optJSONObject("properties");
+                HashMap<String, String> propertyMap = new HashMap<>();
+                if (properties != null) {
+                    String uuid = properties.optString("uuid");
+                    if (uuid != null && uuid.length() > 0) {
+                        propertyMap.put("uuid", uuid);
+                    }
+                    String testId = properties.optString("testId");
+                    if (testId != null && testId.length() > 0) {
+                        propertyMap.put("testId", testId);
+                    }
 
+                    String timeout = properties.optString("timeout");
+                    if (timeout != null && timeout.length() > 0) {
+                        propertyMap.put("timeout", "" + timeout);
+                    }
+                }
 
                 Whiteboard wb = WhiteboardCache.add(roomId, langId);
                 if (width != -1) {
@@ -389,6 +407,11 @@ public class CallHandler {
                 if (name != null) {
                     wb.setName(name);
                 }
+
+                if (propertyMap.size() > 0) {
+                    wb.setProperties(propertyMap);
+                }
+
                 sendWbAll(user, WbAction.createWb, getAddWbJson(wb));
             }
             break;
@@ -597,7 +620,7 @@ public class CallHandler {
     }
 
 
-    private static JSONObject getAddWbJson(final Whiteboard wb) {
+    public static JSONObject getAddWbJson(final Whiteboard wb) {
         JSONObject obj =  new JSONObject().put("wbId", wb.getId())
                 .put("name", wb.getName())
                 .put("width", wb.getWidth())
@@ -606,6 +629,9 @@ public class CallHandler {
                 .put("zoomMode", wb.getZoomMode())
                 .put("slide", wb.getSlide());
 
+        if (wb.getProperties() != null && wb.getProperties().size() > 0) {
+            obj.put("properties", wb.getProperties());
+        }
         if (wb.getSlides() != null) {
             obj.put("slides", wb.getSlides());
         }

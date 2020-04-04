@@ -162,7 +162,8 @@ ReactDOM.render(
     }
 );
 
-if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.logger) {
+const DEBUG = true;
+if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.logger && !DEBUG) {
     window.console.log = function(message){
         var m = "";
         for (var i = 0; i < arguments.length; i++) {

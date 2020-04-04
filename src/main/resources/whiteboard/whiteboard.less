@@ -14,10 +14,37 @@
     width: 100%;
 	height: 100%;
 	border: 2px solid lightgray;
+	position: relative;
+
+	.wb-background {
+		background-color: transparent;
+		position: absolute;
+		overflow: hidden;
+	}
 }
 
 .wb-canvas {
 	width: 100%;
 	height:100%;
+	position: relative;
 }
 
+.question {
+	margin-top:12px;
+	margin-left:12px;
+	.ask {
+		margin-bottom: 12px;
+		font-size: 24px;
+	}
+	.option {
+		margin-bottom:4px;
+		font-size: 16px;
+	}
+
+	.answer {
+		position: relative;
+		right:100px;
+		float:right;
+		font-size: 32px;
+	}
+}
