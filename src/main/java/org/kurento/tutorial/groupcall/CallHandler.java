@@ -382,6 +382,11 @@ public class CallHandler {
                     if (timeout != null && timeout.length() > 0) {
                         propertyMap.put("timeout", "" + timeout);
                     }
+
+                    String questions = properties.optString("questions");
+                    if (questions != null && questions.length() > 0) {
+                        propertyMap.put("questions", questions);
+                    }
                 }
 
                 Whiteboard wb = WhiteboardCache.add(roomId, langId);
