@@ -424,20 +424,7 @@ export class WhiteBoard extends React.Component {
 
 	handleWindowResize(e) {
 		console.log("window resize event:", e);
-		//center in the document, fullFit margin:8
-		var width = this.props.width;
-		var height = this.props.height;
-		var windowWidth = document.body.clientWidth - 16;
-		var windowHeight = document.body.clientHeight - 16;
-		var zoom = Math.min(windowWidth/width, windowHeight/height);
-		var w = zoom*width;
-		var h = zoom*height;
-		this.fabric.setWidth(zoom * width).setHeight(zoom * height).setZoom(zoom);
-
-		this.area.style.width = w;
-		this.area.style.height = h;
-		this.area.style.top = 8;
-		this.area.style.left = 8;
+		this._setSize(this.props.width, this.props.height);
 	}
 
 	renderQuestion() {
