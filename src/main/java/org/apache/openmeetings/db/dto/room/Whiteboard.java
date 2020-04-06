@@ -47,6 +47,7 @@ public class Whiteboard implements Serializable {
 	private int slide = 0;
 	private String name;
 	private ArrayList<String> slides;
+	private boolean finished;//小测已经结束
 	private HashMap<String, String> properties;//额外属性
 
 	public Whiteboard() {}
@@ -94,6 +95,13 @@ public class Whiteboard implements Serializable {
 	}
 	public ArrayList<String> getSlides() {
 		return this.slides;
+	}
+
+	public void setFinished(boolean finished)  {
+		this.finished = finished;
+	}
+	public boolean getFinished() {
+		return this.finished;
 	}
 
 	public void setProperties(HashMap<String, String> properties) {

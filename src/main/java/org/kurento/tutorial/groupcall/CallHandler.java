@@ -164,6 +164,7 @@ public class CallHandler {
                 case "stopRecording":
                 case "videoStatus":
                 case "loadVideos":
+                case "finishTest":
                     try {
                         WbAction a = WbAction.valueOf(jsonMessage.get("id").getAsString());
                         JSONObject jobj;
@@ -351,6 +352,18 @@ public class CallHandler {
                 }
                 sb.append(arr.toString()).append(");");
 
+                return;
+            }
+            case finishTest:
+            {
+                long _id = obj.optLong("wbId", -1);
+                Long wbId = _id < 0 ? null : _id;
+                Whiteboard wb = WhiteboardCache.get(roomId).get(wbId);
+                if (wb == null) {
+                    return;
+                }
+                wb.setFinished(true);
+                sendWbOthers(user, a, obj);
                 return;
             }
             default:
@@ -632,7 +645,9 @@ public class CallHandler {
                 .put("height", wb.getHeight())
                 .put("zoom", wb.getZoom())
                 .put("zoomMode", wb.getZoomMode())
-                .put("slide", wb.getSlide());
+                .put("slide", wb.getSlide())
+                .put("finished", wb.getFinished());
+
 
         if (wb.getProperties() != null && wb.getProperties().size() > 0) {
             obj.put("properties", wb.getProperties());
