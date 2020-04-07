@@ -45,6 +45,7 @@ public class GroupCallApp {
   static FileItemDao fileItemDao;
 
   public static void main(String[] args) {
+    printCommitId();
     if (args.length == 0) {
       log.info("no config file, exit app");
       return;
@@ -167,5 +168,25 @@ public class GroupCallApp {
     return _file;
   }
 
+
+  static void printCommitId() {
+    try {
+      ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+      InputStream input = classLoader.getResourceAsStream("git.properties");
+      Properties props = new Properties();
+      props.load(input);
+      String commitId = props.getProperty("git.commit.id.full");
+      String buildTime = props.getProperty("git.build.time");
+      log.info("commit id:{} build time:{}", commitId, buildTime);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      log.info("read config file failure:" + ex);
+      return;
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      log.info("read config file failure:" + ex);
+      return;
+    }
+  }
 
 }
