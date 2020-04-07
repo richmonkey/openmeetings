@@ -43,7 +43,7 @@
 		<old-backups.dir>${project.build.directory}/test-data</old-backups.dir>
 		<pdfbox.version>2.0.6</pdfbox.version>
 		<simple-xml.version>2.7.1</simple-xml.version>
-        <spring.version>4.3.10.RELEASE</spring.version>
+        <spring.version>5.2.5.RELEASE</spring.version>
 		<derby.version>10.13.1.1</derby.version>
 		<ical4j.version>2.0.4</ical4j.version>
 
