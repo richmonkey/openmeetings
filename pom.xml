@@ -41,7 +41,7 @@
 		<mysql.version>5.1.43</mysql.version>
 		<mssql.version>6.2.1.jre8</mssql.version>
 		<old-backups.dir>${project.build.directory}/test-data</old-backups.dir>
-		<pdfbox.version>2.0.6</pdfbox.version>
+		<pdfbox.version>2.0.15</pdfbox.version>
 		<simple-xml.version>2.7.1</simple-xml.version>
         <spring.version>4.3.10.RELEASE</spring.version>
 		<derby.version>10.13.1.1</derby.version>
